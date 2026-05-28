@@ -3,9 +3,13 @@ package crm.view;
 import crm.dao.ComercialDAO;
 import crm.dao.ClienteFormalDAO;
 import crm.dao.ClientePotencialDAO;
+import crm.dao.PedidoDAO;
+import crm.dao.FacturaDAO;
 import crm.model.Comercial;
 import crm.model.ClienteFormal;
 import crm.model.ClientePotencial;
+import crm.model.Pedido;
+import crm.model.Factura;
 import crm.exception.EmailInvalidoException;
 import crm.exception.NifInvalidoException;
 
@@ -15,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class MenuVentana extends JFrame {
@@ -26,10 +31,12 @@ public class MenuVentana extends JFrame {
     private ComercialDAO comercialDAO = new ComercialDAO();
     private ClienteFormalDAO clienteFormalDAO = new ClienteFormalDAO();
     private ClientePotencialDAO clientePotencialDAO = new ClientePotencialDAO();
+    private PedidoDAO pedidoDAO = new PedidoDAO();
+    private FacturaDAO facturaDAO = new FacturaDAO();
 
     public MenuVentana() {
         setTitle("CRM XTART - Menú Principal");
-        setSize(600, 500);
+        setSize(600, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
@@ -38,19 +45,19 @@ public class MenuVentana extends JFrame {
         txtConsola.setEditable(false);
 
         JScrollPane scroll = new JScrollPane(txtConsola);
-        scroll.setBounds(20, 20, 540, 350);
+        scroll.setBounds(20, 20, 540, 400);
         add(scroll);
 
         JLabel lblInfo = new JLabel("Elige una opción:");
-        lblInfo.setBounds(20, 390, 120, 25);
+        lblInfo.setBounds(20, 440, 120, 25);
         add(lblInfo);
 
         txtOpcion = new JTextField();
-        txtOpcion.setBounds(130, 390, 50, 25);
+        txtOpcion.setBounds(130, 440, 50, 25);
         add(txtOpcion);
 
         btnEnviar = new JButton("Enviar");
-        btnEnviar.setBounds(190, 390, 90, 25);
+        btnEnviar.setBounds(190, 440, 90, 25);
         add(btnEnviar);
 
         imprimirMenu();
@@ -93,10 +100,10 @@ public class MenuVentana extends JFrame {
                     gestionarClientesFormales();
                     break;
                 case 4:
-                    txtConsola.append("\n> Módulo de Pedidos en desarrollo.\n");
+                    gestionarPedidos();
                     break;
                 case 5:
-                    txtConsola.append("\n> Módulo de Facturas en desarrollo.\n");
+                    gestionarFacturas();
                     break;
                 case 6:
                     JOptionPane.showMessageDialog(this, "Saliendo del sistema CRM.");
@@ -153,14 +160,13 @@ public class MenuVentana extends JFrame {
             nuevo.setZonaGeografica(zona);
             nuevo.setFechaAlta(LocalDate.now());
 
-            boolean exito = comercialDAO.insertar(nuevo);
-            if (exito) txtConsola.append("\n> Comercial guardado en BD.\n");
+            if (comercialDAO.insertar(nuevo)) txtConsola.append("\n> Comercial guardado en BD.\n");
             else txtConsola.append("\n> Error al guardar en BD.\n");
 
         } catch (EmailInvalidoException ex) {
             txtConsola.append("\n> Error de validación: " + ex.getMessage() + "\n");
         } catch (Exception e) {
-            txtConsola.append("\n> Alta cancelada.\n");
+            txtConsola.append("\n> Alta cancelada o datos incorrectos.\n");
         }
     }
 
@@ -211,7 +217,7 @@ public class MenuVentana extends JFrame {
 
     private void gestionarClientesFormales() {
         String input = JOptionPane.showInputDialog(this,
-                "Módulo Clientes Formales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\nElige una opción:");
+                "Módulo Clientes Formales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Buscar Cliente (Demostrar sobrecarga)\nElige una opción:");
 
         if (input == null || input.trim().isEmpty()) return;
 
@@ -220,6 +226,7 @@ public class MenuVentana extends JFrame {
             if (opcion == 1) altaClienteFormal();
             else if (opcion == 2) listarClientesFormales();
             else if (opcion == 3) borrarClienteFormal();
+            else if (opcion == 4) buscarClienteFormal();
             else txtConsola.append("\n> Opción no válida.\n");
         } catch (NumberFormatException e) {
             txtConsola.append("\n> Error: Introduce un número válido.\n");
@@ -253,14 +260,13 @@ public class MenuVentana extends JFrame {
             nuevo.setDescuentoHabitual(0.0);
             nuevo.setEstado("activo");
 
-            boolean exito = clienteFormalDAO.insertar(nuevo);
-            if (exito) txtConsola.append("\n> Cliente Formal guardado en BD.\n");
+            if (clienteFormalDAO.insertar(nuevo)) txtConsola.append("\n> Cliente Formal guardado en BD.\n");
             else txtConsola.append("\n> Error al guardar en BD.\n");
 
         } catch (NifInvalidoException ex) {
             txtConsola.append("\n> Error de NIF: " + ex.getMessage() + "\n");
         } catch (Exception e) {
-            txtConsola.append("\n> Alta cancelada.\n");
+            txtConsola.append("\n> Alta cancelada o datos incorrectos.\n");
         }
     }
 
@@ -290,11 +296,45 @@ public class MenuVentana extends JFrame {
         }
     }
 
-    // --- MÓDULO CLIENTES POTENCIALES Y SERIALIZACIÓN ---
+    // Nuevo método para utilizar la sobrecarga
+    private void buscarClienteFormal() {
+        String modoStr = JOptionPane.showInputDialog("Buscar por:\n1. ID de Persona\n2. NIF/CIF");
+        if (modoStr == null || modoStr.trim().isEmpty()) return;
+
+        try {
+            int modo = Integer.parseInt(modoStr);
+            ClienteFormal resultado = null;
+
+            if (modo == 1) {
+                String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona:");
+                if (idStr != null) {
+                    resultado = clienteFormalDAO.buscarCliente(Integer.parseInt(idStr)); // Usa el método int
+                }
+            } else if (modo == 2) {
+                String nifStr = JOptionPane.showInputDialog("Introduce el NIF/CIF:");
+                if (nifStr != null) {
+                    resultado = clienteFormalDAO.buscarCliente(nifStr); // Usa el método String
+                }
+            } else {
+                txtConsola.append("\n> Opción de búsqueda no válida.\n");
+                return;
+            }
+
+            if (resultado != null) {
+                txtConsola.append("\n> Cliente Encontrado: " + resultado.getRazonSocial() + " (NIF: " + resultado.getNifCif() + ")\n");
+            } else {
+                txtConsola.append("\n> No se ha encontrado ningún cliente con esos datos.\n");
+            }
+        } catch (NumberFormatException e) {
+            txtConsola.append("\n> Error en los datos introducidos.\n");
+        }
+    }
+
+    // --- MÓDULO CLIENTES POTENCIALES ---
 
     private void gestionarPotenciales() {
         String input = JOptionPane.showInputDialog(this,
-                "Módulo Potenciales:\n1. Dar de alta\n2. Listar\n3. Guardar copia de seguridad (Serializar)\n4. Cargar copia (Deserializar)\nElige opción:");
+                "Módulo Potenciales:\n1. Dar de alta\n2. Listar\n3. Guardar copia (Serializar)\n4. Cargar copia (Deserializar)\nElige opción:");
 
         if (input == null || input.trim().isEmpty()) return;
 
@@ -316,7 +356,7 @@ public class MenuVentana extends JFrame {
             String email = JOptionPane.showInputDialog("Email:");
             String telefono = JOptionPane.showInputDialog("Teléfono:");
             String empresa = JOptionPane.showInputDialog("Nombre de la empresa:");
-            String fuente = JOptionPane.showInputDialog("Fuente de captación (Web, Teléfono, etc.):");
+            String fuente = JOptionPane.showInputDialog("Fuente de captación:");
             String idComercialStr = JOptionPane.showInputDialog("ID del Comercial asignado:");
 
             ClientePotencial nuevo = new ClientePotencial();
@@ -329,11 +369,9 @@ public class MenuVentana extends JFrame {
             nuevo.setFechaPrimerContacto(LocalDate.now());
             nuevo.setIdComercialAsignado(Integer.parseInt(idComercialStr));
 
-            if (clientePotencialDAO.insertar(nuevo)) {
-                txtConsola.append("\n> Cliente Potencial guardado en BD.\n");
-            } else {
-                txtConsola.append("\n> Error al guardar en BD.\n");
-            }
+            if (clientePotencialDAO.insertar(nuevo)) txtConsola.append("\n> Cliente Potencial guardado en BD.\n");
+            else txtConsola.append("\n> Error al guardar en BD.\n");
+
         } catch (Exception e) {
             txtConsola.append("\n> Alta cancelada o datos incorrectos.\n");
         }
@@ -356,7 +394,7 @@ public class MenuVentana extends JFrame {
         ArrayList<ClientePotencial> lista = clientePotencialDAO.listarTodos();
         try (java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(new java.io.FileOutputStream("potenciales_backup.dat"))) {
             oos.writeObject(lista);
-            txtConsola.append("\n> Copia de seguridad serializada correctamente en 'potenciales_backup.dat'.\n");
+            txtConsola.append("\n> Copia serializada correctamente en 'potenciales_backup.dat'.\n");
         } catch (Exception e) {
             txtConsola.append("\n> Error al serializar los datos.\n");
         }
@@ -370,7 +408,124 @@ public class MenuVentana extends JFrame {
                 txtConsola.append("Recuperado: " + c.getNombre() + " de la empresa " + c.getEmpresa() + "\n");
             }
         } catch (Exception e) {
-            txtConsola.append("\n> Error al leer el archivo. Verifica que la copia de seguridad exista.\n");
+            txtConsola.append("\n> Error al leer el archivo.\n");
         }
+    }
+
+    // --- MÓDULO PEDIDOS ---
+
+    private void gestionarPedidos() {
+        String input = JOptionPane.showInputDialog(this,
+                "Módulo Pedidos:\n1. Dar de alta\n2. Listar todos\nElige una opción:");
+
+        if (input == null || input.trim().isEmpty()) return;
+
+        try {
+            int opcion = Integer.parseInt(input);
+            if (opcion == 1) altaPedido();
+            else if (opcion == 2) listarPedidos();
+            else txtConsola.append("\n> Opción no válida.\n");
+        } catch (NumberFormatException e) {
+            txtConsola.append("\n> Error: Introduce un número válido.\n");
+        }
+    }
+
+    private void altaPedido() {
+        try {
+            String idCliente = JOptionPane.showInputDialog("ID del Cliente Formal:");
+            String idComercial = JOptionPane.showInputDialog("ID del Comercial:");
+            String estado = JOptionPane.showInputDialog("Estado (pendiente, en curso, servido, anulado):");
+
+            if (!pedidoDAO.validarEstadoPedido(estado)) {
+                txtConsola.append("\n> Error: El estado '" + estado + "' no es válido.\n");
+                return;
+            }
+
+            Pedido nuevo = new Pedido();
+            nuevo.setFechaPedido(LocalDateTime.now());
+            nuevo.setIdClienteFormal(Integer.parseInt(idCliente));
+            nuevo.setIdComercial(Integer.parseInt(idComercial));
+            nuevo.setEstado(estado.toLowerCase());
+
+            if (pedidoDAO.insertar(nuevo)) txtConsola.append("\n> Pedido guardado en BD.\n");
+            else txtConsola.append("\n> Error al guardar el pedido en BD.\n");
+
+        } catch (Exception e) {
+            txtConsola.append("\n> Alta de pedido cancelada o datos incorrectos.\n");
+        }
+    }
+
+    private void listarPedidos() {
+        ArrayList<Pedido> lista = pedidoDAO.listarTodos();
+        txtConsola.append("\n--- PEDIDOS ---\n");
+        if (lista.isEmpty()) {
+            txtConsola.append("No hay registros en la base de datos.\n");
+        } else {
+            for (Pedido p : lista) {
+                txtConsola.append("ID Pedido: " + p.getIdPedido() + " | Cliente: " + p.getIdClienteFormal() + " | Estado: " + p.getEstado() + "\n");
+            }
+        }
+        txtConsola.append("---------------\n");
+    }
+
+    // --- MÓDULO FACTURAS ---
+
+    private void gestionarFacturas() {
+        String input = JOptionPane.showInputDialog(this,
+                "Módulo Facturas:\n1. Dar de alta\n2. Listar todas\nElige una opción:");
+
+        if (input == null || input.trim().isEmpty()) return;
+
+        try {
+            int opcion = Integer.parseInt(input);
+            if (opcion == 1) altaFactura();
+            else if (opcion == 2) listarFacturas();
+            else txtConsola.append("\n> Opción no válida.\n");
+        } catch (NumberFormatException e) {
+            txtConsola.append("\n> Error: Introduce un número válido.\n");
+        }
+    }
+
+    private void altaFactura() {
+        try {
+            String numero = JOptionPane.showInputDialog("Número de factura (ej: FAC-001):");
+            String idCliente = JOptionPane.showInputDialog("ID del Cliente Formal:");
+            String idPedido = JOptionPane.showInputDialog("ID del Pedido asociado:");
+            String baseImponible = JOptionPane.showInputDialog("Base Imponible:");
+
+            double base = Double.parseDouble(baseImponible);
+            double iva = 21.00;
+            double total = base + (base * (iva / 100));
+
+            Factura nueva = new Factura();
+            nueva.setNumeroFactura(numero);
+            nueva.setFechaEmision(LocalDate.now());
+            nueva.setFechaVencimiento(LocalDate.now().plusDays(30));
+            nueva.setIdClienteFormal(Integer.parseInt(idCliente));
+            nueva.setIdPedido(Integer.parseInt(idPedido));
+            nueva.setBaseImponible(base);
+            nueva.setTipoIva(iva);
+            nueva.setTotal(total);
+            nueva.setEstado("pendiente");
+
+            if (facturaDAO.insertar(nueva)) txtConsola.append("\n> Factura guardada en BD.\n");
+            else txtConsola.append("\n> Error al guardar la factura en BD.\n");
+
+        } catch (Exception e) {
+            txtConsola.append("\n> Alta de factura cancelada o datos incorrectos.\n");
+        }
+    }
+
+    private void listarFacturas() {
+        ArrayList<Factura> lista = facturaDAO.listarTodos();
+        txtConsola.append("\n--- FACTURAS ---\n");
+        if (lista.isEmpty()) {
+            txtConsola.append("No hay registros en la base de datos.\n");
+        } else {
+            for (Factura f : lista) {
+                txtConsola.append("Nº: " + f.getNumeroFactura() + " | Total: " + f.getTotal() + "€ | Estado: " + f.getEstado() + "\n");
+            }
+        }
+        txtConsola.append("----------------\n");
     }
 }

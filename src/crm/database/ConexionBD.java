@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConexionBD {
 
     // variables finales como pide el profe en la rubrica
-    private static final String URL = "jdbc:mysql://172.20.10.4:3306/crm_xtart";
+    private static final String URL = "jdbc:mysql://172.20.10.4:3306/crm_xtart?useSSL=false&serverTimezone=UTC";
     private static final String USER = "jungleuser";
     private static final String PASS = "JungleP@ss_2026";
 

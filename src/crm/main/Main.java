@@ -4,7 +4,7 @@ import crm.view.Login;
 
 public class Main {
     public static void main(String[] args) {
-        // creamos la ventana de login y la hacemos visible
+        // creamos la ventana de login
         Login ventana = new Login();
         ventana.setVisible(true);
     }
