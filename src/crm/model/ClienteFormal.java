@@ -2,7 +2,7 @@ package crm.model;
 
 import java.time.LocalDateTime;
 
-public class ClienteFormal extends Persona {
+public class ClienteFormal extends ClienteBase {
     private int idFormal;
     private String codigoCliente;
     private String nifCif;
@@ -10,12 +10,14 @@ public class ClienteFormal extends Persona {
     private String direccionFiscal;
     private String condicionesPago;
     private double descuentoHabitual;
-    private String estado;
 
     public ClienteFormal(int idPersona, String nombre, String email, String telefono, LocalDateTime fechaRegistro,
                          int idFormal, String codigoCliente, String nifCif, String razonSocial,
                          String direccionFiscal, String condicionesPago, double descuentoHabitual, String estado) {
-        super(idPersona, nombre, email, telefono, fechaRegistro);
+
+        // El estado se pasa al super() porque ahora pertenece a ClienteBase
+        super(idPersona, nombre, email, telefono, fechaRegistro, estado);
+
         this.idFormal = idFormal;
         this.codigoCliente = codigoCliente;
         this.nifCif = nifCif;
@@ -23,14 +25,13 @@ public class ClienteFormal extends Persona {
         this.direccionFiscal = direccionFiscal;
         this.condicionesPago = condicionesPago;
         this.descuentoHabitual = descuentoHabitual;
-        this.estado = estado;
     }
 
     public ClienteFormal() {
         super();
     }
 
-    // todos los getters y setters pillaos rapido
+    // todos los getters y setters pillaos rapido (estado ya no está porque se hereda)
     public int getIdFormal() { return idFormal; }
     public void setIdFormal(int idFormal) { this.idFormal = idFormal; }
 
@@ -51,7 +52,4 @@ public class ClienteFormal extends Persona {
 
     public double getDescuentoHabitual() { return descuentoHabitual; }
     public void setDescuentoHabitual(double descuentoHabitual) { this.descuentoHabitual = descuentoHabitual; }
-
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
 }
