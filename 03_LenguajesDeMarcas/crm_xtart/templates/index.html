@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM XTART - Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5; 
+        }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white">
+
+    <!-- COMPONENTE: MENÚ DE NAVEGACIÓN -->
+    {% include 'menu.html' %}
+
+    <!-- CABECERA Y ESTADÍSTICAS GLOBALES -->
+    <header class="relative overflow-hidden bg-slate-950 py-12 border-b border-slate-800/60">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
+                        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                        Ecosistema Activo CRM
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-white tracking-tight">Panel de Gestión General</h1>
+                    <p class="mt-2 text-base text-slate-400 max-w-2xl">Visualización e integración unificada del ecosistema comercial en tiempo real mediante peticiones asíncronas.</p>
+                </div>
+                
+                <div class="relative max-w-xs w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                    </div>
+                    <input type="text" id="buscador-general" placeholder="Buscar en tablas..." 
+                           class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-all shadow-lg">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+                    <div class="p-3 rounded-lg bg-indigo-500/10 text-indigo-400"><i class="fa-solid fa-briefcase text-lg"></i></div>
+                    <div><p class="text-xs text-slate-400">Comerciales</p><p class="text-lg font-bold text-white" id="stats-comerciales">...</p></div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+                    <div class="p-3 rounded-lg bg-amber-500/10 text-amber-400"><i class="fa-solid fa-bullseye text-lg"></i></div>
+                    <div><p class="text-xs text-slate-400">Leads (Potenciales)</p><p class="text-lg font-bold text-white" id="stats-potenciales">...</p></div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+                    <div class="p-3 rounded-lg bg-emerald-500/10 text-emerald-400"><i class="fa-solid fa-users text-lg"></i></div>
+                    <div><p class="text-xs text-slate-400">Clientes Formales</p><p class="text-lg font-bold text-white" id="stats-formales">...</p></div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+                    <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400"><i class="fa-solid fa-box text-lg"></i></div>
+                    <div><p class="text-xs text-slate-400">Pedidos Totales</p><p class="text-lg font-bold text-white" id="stats-pedidos">...</p></div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex items-center gap-3 col-span-2 lg:col-span-1">
+                    <div class="p-3 rounded-lg bg-pink-500/10 text-pink-400"><i class="fa-solid fa-file-invoice-dollar text-lg"></i></div>
+                    <div><p class="text-xs text-slate-400">Facturación</p><p class="text-lg font-bold text-white" id="stats-facturas">...</p></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN: CONTENEDOR DE MÓDULOS -->
+    <main class="max-w-7xl mx-auto px-4 py-10 space-y-12">
+
+        <!-- MÓDULO 1: CLIENTES POTENCIALES -->
+        <section id="potenciales" class="bg-slate-900/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-2xl transition hover:border-slate-800 duration-300">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-bullseye text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Clientes Potenciales (Leads)</h2>
+                        <p class="text-xs text-slate-400">Oportunidades de negocio y captaciones iniciales</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-700">Módulo 1</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-850">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold">Contacto</th>
+                            <th class="px-5 py-4 font-semibold">Empresa</th>
+                            <th class="px-5 py-4 font-semibold">Email</th>
+                            <th class="px-5 py-4 font-semibold">Captación</th>
+                            <th class="px-5 py-4 font-semibold">Estado</th>
+                            <th class="px-5 py-4 font-semibold">Primer Contacto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-potenciales" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="6" class="px-5 py-8 text-center text-slate-500"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando leads...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MÓDULO 2: CLIENTES FORMALES -->
+        <section id="formales" class="bg-slate-900/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-2xl transition hover:border-slate-800 duration-300">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-users text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Cartera de Clientes Formales</h2>
+                        <p class="text-xs text-slate-400">Clientes registrados con contratos y condiciones comerciales</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-700">Módulo 2</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-850">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold">Código</th>
+                            <th class="px-5 py-4 font-semibold">NIF/CIF</th>
+                            <th class="px-5 py-4 font-semibold">Razón Social</th>
+                            <th class="px-5 py-4 font-semibold">Condiciones Pago</th>
+                            <th class="px-5 py-4 font-semibold">Dto. Habitual</th>
+                            <th class="px-5 py-4 font-semibold">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-formales" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="6" class="px-5 py-8 text-center text-slate-500"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando clientes formales...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MÓDULO 3: COMERCIALES -->
+        <section id="comerciales" class="bg-slate-900/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-2xl transition hover:border-slate-800 duration-300">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                        <i class="fa-solid fa-briefcase text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Equipo de Comerciales</h2>
+                        <p class="text-xs text-slate-400">Listado de gestores comerciales registrados</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-700">Módulo 3</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-850">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold">ID</th>
+                            <th class="px-5 py-4 font-semibold">Nombre Completo</th>
+                            <th class="px-5 py-4 font-semibold">Email</th>
+                            <th class="px-5 py-4 font-semibold">Teléfono</th>
+                            <th class="px-5 py-4 font-semibold">Zona</th>
+                            <th class="px-5 py-4 font-semibold">Fecha Alta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-comerciales" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="6" class="px-5 py-8 text-center text-slate-500"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando comerciales...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MÓDULO 4: PEDIDOS -->
+        <section id="pedidos" class="bg-slate-900/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-2xl transition hover:border-slate-800 duration-300">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-box text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Órdenes y Pedidos</h2>
+                        <p class="text-xs text-slate-400">Transacciones de venta realizadas y estados de distribución</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-700">Módulo 4</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-850">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold">Nº Pedido</th>
+                            <th class="px-5 py-4 font-semibold">Fecha</th>
+                            <th class="px-5 py-4 font-semibold">Cliente</th>
+                            <th class="px-5 py-4 font-semibold">Comercial</th>
+                            <th class="px-5 py-4 font-semibold">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-pedidos" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="5" class="px-5 py-8 text-center text-slate-500"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MÓDULO 5: FACTURAS -->
+        <section id="facturas" class="bg-slate-900/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-2xl transition hover:border-slate-800 duration-300">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400">
+                        <i class="fa-solid fa-file-invoice-dollar text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Historial de Facturación</h2>
+                        <p class="text-xs text-slate-400">Facturas generadas, cobros y plazos de vencimiento</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-700">Módulo 5</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-850">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold">Nº Factura</th>
+                            <th class="px-5 py-4 font-semibold">Emisión</th>
+                            <th class="px-5 py-4 font-semibold">Vencimiento</th>
+                            <th class="px-5 py-4 font-semibold">Cliente</th>
+                            <th class="px-5 py-4 font-semibold">Importe Total</th>
+                            <th class="px-5 py-4 font-semibold">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-facturas" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="6" class="px-5 py-8 text-center text-slate-500"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando facturas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-8 text-center text-slate-500 text-xs">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>Hecho por Javi, Fran y Joel</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            
+            /* JAVASCRIPT: PETICIONES Y RENDERIZADO DE TABLAS */
+
+            // COMERCIALES
+            $.getJSON("/api/comerciales").done(function(json) {
+                let html = "";
+                $("#stats-comerciales").text(json.length);
+                
+                if(json.length === 0) {
+                    html = '<tr><td colspan="6" class="px-5 py-6 text-center text-slate-400">No hay comerciales registrados</td></tr>';
+                } else {
+                    json.forEach(c => {
+                        const iniciales = (c.nombre.charAt(0) + (c.apellidos ? c.apellidos.charAt(0) : '')).toUpperCase();
+                        html += `<tr class="hover:bg-slate-800/40 transition-colors group">
+                            <td class="px-5 py-4 font-mono font-bold text-indigo-400">#${c.id_comercial}</td>
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs border border-indigo-500/30">
+                                        ${iniciales}
+                                    </div>
+                                    <span class="text-white font-semibold group-hover:text-indigo-400 transition">${c.nombre} ${c.apellidos}</span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-4 text-slate-400 font-light">${c.email}</td>
+                            <td class="px-5 py-4 text-slate-400">${c.telefono || '<span class="text-slate-600 font-light">Sin teléfono</span>'}</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-500/10 text-indigo-300 text-xs font-medium rounded-full border border-indigo-500/20">
+                                    <span class="w-1 h-1 rounded-full bg-indigo-400"></span>
+                                    ${c.zona_geografica}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 text-slate-400 text-sm">${c.fecha_alta}</td>
+                        </tr>`;
+                    });
+                }
+                $("#tabla-comerciales").html(html);
+            }).fail(function() {
+                $("#tabla-comerciales").html('<tr><td colspan="6" class="px-5 py-8 text-center text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error al conectar con la API</td></tr>');
+            });
+
+            // CLIENTES POTENCIALES
+            $.getJSON("/api/potenciales").done(function(json) {
+                let html = "";
+                $("#stats-potenciales").text(json.length);
+                
+                if(json.length === 0) {
+                    html = '<tr><td colspan="6" class="px-5 py-6 text-center text-slate-400">No hay leads potenciales</td></tr>';
+                } else {
+                    json.forEach(cp => {
+                        let badgeColor = "";
+                        const estadoOriginal = cp.estado || cp.state;
+                        const estadoLCase = estadoOriginal ? estadoOriginal.toLowerCase() : '';
+                        
+                        if (estadoLCase === 'convertido' || estadoLCase === 'ganado') {
+                            badgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                        } else if (estadoLCase === 'perdido' || estadoLCase === 'descartado') {
+                            badgeColor = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+                        } else {
+                            badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                        }
+
+                        html += `<tr class="hover:bg-slate-800/40 transition-colors group">
+                            <td class="px-5 py-4 font-semibold text-white group-hover:text-amber-400 transition">${cp.nombre}</td>
+                            <td class="px-5 py-4 text-slate-300 font-medium">${cp.empresa || '<em class="text-slate-600 font-light">Persona Física</em>'}</td>
+                            <td class="px-5 py-4 text-slate-400 font-light">${cp.email}</td>
+                            <td class="px-5 py-4"><span class="text-xs bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700 text-slate-300 font-mono">${cp.fuente_captacion}</span></td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border capitalize ${badgeColor}">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                    ${estadoOriginal || 'Indefinido'}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 text-slate-400 text-sm">${cp.fecha_primer_contacto}</td>
+                        </tr>`;
+                    });
+                }
+                $("#tabla-potenciales").html(html);
+            }).fail(function() {
+                $("#tabla-potenciales").html('<tr><td colspan="6" class="px-5 py-8 text-center text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error al conectar con la API</td></tr>');
+            });
+
+            // CLIENTES FORMALES
+            $.getJSON("/api/formales").done(function(json) {
+                let html = "";
+                $("#stats-formales").text(json.length);
+                
+                if(json.length === 0) {
+                    html = '<tr><td colspan="6" class="px-5 py-6 text-center text-slate-400">No hay clientes formales registrados</td></tr>';
+                } else {
+                    json.forEach(cf => {
+                        let badgeColor = cf.estado === 'activo' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-800 text-slate-400 border-slate-700';
+                        html += `<tr class="hover:bg-slate-800/40 transition-colors group">
+                            <td class="px-5 py-4 font-mono text-indigo-400 font-bold text-xs">${cf.codigo_cliente}</td>
+                            <td class="px-5 py-4 font-mono text-slate-400 text-xs">${cf.nif_cif}</td>
+                            <td class="px-5 py-4 text-white font-semibold group-hover:text-indigo-400 transition">${cf.razon_social}</td>
+                            <td class="px-5 py-4 capitalize text-slate-300 font-light">${cf.condiciones_pago.replace('_', ' ')}</td>
+                            <td class="px-5 py-4 font-semibold text-indigo-300">${cf.descuento_habitual}%</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full border capitalize ${badgeColor}">
+                                    ${cf.estado}
+                                </span>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                $("#tabla-formales").html(html);
+            }).fail(function() {
+                $("#tabla-formales").html('<tr><td colspan="6" class="px-5 py-8 text-center text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error al conectar con la API</td></tr>');
+            });
+
+            // PEDIDOS
+            $.getJSON("/api/pedidos").done(function(json) {
+                let html = "";
+                $("#stats-pedidos").text(json.length);
+                
+                if(json.length === 0) {
+                    html = '<tr><td colspan="5" class="px-5 py-6 text-center text-slate-400">No hay pedidos registrados</td></tr>';
+                } else {
+                    json.forEach(p => {
+                        let badgeColor = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+                        const est = p.estado.toLowerCase();
+                        if (est === 'pendiente') {
+                            badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                        } else if (est === 'enviado' || est === 'entregado') {
+                            badgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                        } else if (est === 'cancelado') {
+                            badgeColor = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+                        }
+
+                        html += `<tr class="hover:bg-slate-800/40 transition-colors">
+                            <td class="px-5 py-4 font-bold text-white">#${p.id_pedido}</td>
+                            <td class="px-5 py-4 text-slate-400 text-sm">${p.fecha_pedido}</td>
+                            <td class="px-5 py-4 text-slate-200 font-medium">${p.cliente}</td>
+                            <td class="px-5 py-4 text-slate-400 font-light"><i class="fa-solid fa-user-tie text-xs mr-1 text-slate-500"></i> ${p.comercial}</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full border uppercase ${badgeColor}">
+                                    ${p.estado}
+                                </span>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                $("#tabla-pedidos").html(html);
+            }).fail(function() {
+                $("#tabla-pedidos").html('<tr><td colspan="5" class="px-5 py-8 text-center text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error al conectar con la API</td></tr>');
+            });
+
+            // FACTURAS
+            $.getJSON("/api/facturas").done(function(json) {
+                let html = "";
+                let totalFacturado = 0;
+                
+                if(json.length === 0) {
+                    html = '<tr><td colspan="6" class="px-5 py-6 text-center text-slate-400">No hay facturas emitidas</td></tr>';
+                    $("#stats-facturas").text("0 €");
+                } else {
+                    json.forEach(f => {
+                        totalFacturado += parseFloat(f.total);
+                        let badgeColor = f.estado === 'cobrada' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : f.estado === 'vencida' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                        
+                        html += `<tr class="hover:bg-slate-800/40 transition-colors">
+                            <td class="px-5 py-4 font-bold text-white font-mono">${f.numero_factura}</td>
+                            <td class="px-5 py-4 text-slate-400 text-sm">${f.fecha_emision}</td>
+                            <td class="px-5 py-4 text-slate-400 text-sm">${f.fecha_vencimiento}</td>
+                            <td class="px-5 py-4 text-slate-300 font-medium">${f.cliente}</td>
+                            <td class="px-5 py-4 text-emerald-400 font-extrabold text-right pr-8">${parseFloat(f.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full border uppercase ${badgeColor}">
+                                    ${f.estado}
+                                </span>
+                            </td>
+                        </tr>`;
+                    });
+                    $("#stats-facturas").text(totalFacturado.toLocaleString('es-ES', { maximumFractionDigits: 0 }) + " €");
+                }
+                $("#tabla-facturas").html(html);
+            }).fail(function() {
+                $("#tabla-facturas").html('<tr><td colspan="6" class="px-5 py-8 text-center text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error al conectar con la API</td></tr>');
+                $("#stats-facturas").text("Error");
+            });
+
+            // FILTRO DE BÚSQUEDA GENERAL
+            $("#buscador-general").on("keyup", function() {
+                const value = $(this).val().toLowerCase();
+                $("tbody tr").filter(function() {
+                    if ($(this).text().includes("Cargando") || $(this).text().includes("No hay")) return;
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+</body>
+</html>
