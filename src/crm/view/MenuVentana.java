@@ -121,7 +121,7 @@ public class MenuVentana extends JFrame {
 
     private void gestionarComerciales() {
         String input = JOptionPane.showInputDialog(this,
-                "Módulo Comerciales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Exportar a TXT\nElige una opción:");
+                "Módulo Comerciales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Exportar a TXT\n5. Modificar (UPDATE)\nElige una opción:");
 
         if (input == null || input.trim().isEmpty()) return;
 
@@ -131,6 +131,7 @@ public class MenuVentana extends JFrame {
             else if (opcion == 2) listarComerciales();
             else if (opcion == 3) borrarComercial();
             else if (opcion == 4) exportarComercialesTXT();
+            else if (opcion == 5) modificarComercial();
             else txtConsola.append("\n> Opción no válida.\n");
         } catch (NumberFormatException e) {
             txtConsola.append("\n> Error: Introduce un número válido.\n");
@@ -213,11 +214,49 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    private void modificarComercial() {
+        String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona del comercial a modificar:");
+        if (idStr == null || idStr.trim().isEmpty()) return;
+
+        try {
+            int id = Integer.parseInt(idStr);
+            Comercial c = comercialDAO.buscarComercial(id);
+
+            if (c == null) {
+                txtConsola.append("\n> No se encontró ningún comercial con ese ID.\n");
+                return;
+            }
+
+            // Pedimos los datos nuevos mostrando los antiguos por defecto
+            String nombre = JOptionPane.showInputDialog("Nombre:", c.getNombre());
+            String email = JOptionPane.showInputDialog("Email:", c.getEmail());
+            String telefono = JOptionPane.showInputDialog("Teléfono:", c.getTelefono());
+            String codigo = JOptionPane.showInputDialog("Código Comercial:", c.getCodigoComercial());
+            String zona = JOptionPane.showInputDialog("Zona:", c.getZonaGeografica());
+
+            // Actualizamos el objeto
+            if (nombre != null) c.setNombre(nombre);
+            if (email != null) c.setEmail(email);
+            if (telefono != null) c.setTelefono(telefono);
+            if (codigo != null) c.setCodigoComercial(codigo);
+            if (zona != null) c.setZonaGeografica(zona);
+
+            if (comercialDAO.actualizar(c)) {
+                txtConsola.append("\n> Comercial actualizado correctamente en la BD.\n");
+            } else {
+                txtConsola.append("\n> Error al actualizar el comercial en la BD.\n");
+            }
+
+        } catch (NumberFormatException e) {
+            txtConsola.append("\n> Error: El ID debe ser un número entero.\n");
+        }
+    }
+
     // --- MÓDULO CLIENTES FORMALES ---
 
     private void gestionarClientesFormales() {
         String input = JOptionPane.showInputDialog(this,
-                "Módulo Clientes Formales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Buscar Cliente (Demostrar sobrecarga)\nElige una opción:");
+                "Módulo Clientes Formales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Buscar Cliente\nElige una opción:");
 
         if (input == null || input.trim().isEmpty()) return;
 
@@ -296,7 +335,6 @@ public class MenuVentana extends JFrame {
         }
     }
 
-    // Nuevo método para utilizar la sobrecarga
     private void buscarClienteFormal() {
         String modoStr = JOptionPane.showInputDialog("Buscar por:\n1. ID de Persona\n2. NIF/CIF");
         if (modoStr == null || modoStr.trim().isEmpty()) return;
@@ -308,12 +346,12 @@ public class MenuVentana extends JFrame {
             if (modo == 1) {
                 String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona:");
                 if (idStr != null) {
-                    resultado = clienteFormalDAO.buscarCliente(Integer.parseInt(idStr)); // Usa el método int
+                    resultado = clienteFormalDAO.buscarCliente(Integer.parseInt(idStr));
                 }
             } else if (modo == 2) {
                 String nifStr = JOptionPane.showInputDialog("Introduce el NIF/CIF:");
                 if (nifStr != null) {
-                    resultado = clienteFormalDAO.buscarCliente(nifStr); // Usa el método String
+                    resultado = clienteFormalDAO.buscarCliente(nifStr);
                 }
             } else {
                 txtConsola.append("\n> Opción de búsqueda no válida.\n");
