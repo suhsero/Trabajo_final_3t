@@ -10,6 +10,7 @@ import crm.model.ClienteFormal;
 import crm.model.ClientePotencial;
 import crm.model.Pedido;
 import crm.model.Factura;
+import crm.database.ConexionBD;
 import crm.exception.EmailInvalidoException;
 import crm.exception.NifInvalidoException;
 
@@ -18,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -77,7 +79,8 @@ public class MenuVentana extends JFrame {
         txtConsola.append("3. Gestión de Clientes Formales\n");
         txtConsola.append("4. Gestión de Pedidos\n");
         txtConsola.append("5. Gestión de Facturas\n");
-        txtConsola.append("6. Salir del programa\n");
+        txtConsola.append("6. Comprobar conexión con BD\n");
+        txtConsola.append("7. Salir del programa\n");
         txtConsola.append("--------------------------------\n");
         txtConsola.append("Introduce el número de la opción y pulsa Enviar.\n");
     }
@@ -106,11 +109,14 @@ public class MenuVentana extends JFrame {
                     gestionarFacturas();
                     break;
                 case 6:
+                    comprobarConexion();
+                    break;
+                case 7:
                     JOptionPane.showMessageDialog(this, "Saliendo del sistema CRM.");
                     System.exit(0);
                     break;
                 default:
-                    txtConsola.append("\n> Opción no válida. Introduce un número del 1 al 6.\n");
+                    txtConsola.append("\n> Opción no válida. Introduce un número del 1 al 7.\n");
             }
         } catch (NumberFormatException e) {
             txtConsola.append("\n> Error: Debes introducir un número entero.\n");
@@ -372,7 +378,7 @@ public class MenuVentana extends JFrame {
 
     private void gestionarPotenciales() {
         String input = JOptionPane.showInputDialog(this,
-                "Módulo Potenciales:\n1. Dar de alta\n2. Listar\n3. Guardar copia (Serializar)\n4. Cargar copia (Deserializar)\nElige opción:");
+                "Módulo Potenciales:\n1. Dar de alta\n2. Listar\n3. Borrar\n4. Modificar\n5. Guardar copia (Serializar)\n6. Cargar copia (Deserializar)\nElige opción:");
 
         if (input == null || input.trim().isEmpty()) return;
 
@@ -380,8 +386,10 @@ public class MenuVentana extends JFrame {
             int opcion = Integer.parseInt(input);
             if (opcion == 1) altaPotencial();
             else if (opcion == 2) listarPotenciales();
-            else if (opcion == 3) serializarPotenciales();
-            else if (opcion == 4) deserializarPotenciales();
+            else if (opcion == 3) borrarPotencial();
+            else if (opcion == 4) modificarPotencial();
+            else if (opcion == 5) serializarPotenciales();
+            else if (opcion == 6) deserializarPotenciales();
             else txtConsola.append("\n> Opción no válida.\n");
         } catch (NumberFormatException e) {
             txtConsola.append("\n> Error: Introduce un número válido.\n");
@@ -447,6 +455,55 @@ public class MenuVentana extends JFrame {
             }
         } catch (Exception e) {
             txtConsola.append("\n> Error al leer el archivo.\n");
+        }
+    }
+
+    private void borrarPotencial() {
+        String input = JOptionPane.showInputDialog("ID de Persona a borrar:");
+        if (input != null) {
+            try {
+                int id = Integer.parseInt(input);
+                if (clientePotencialDAO.eliminar(id)) txtConsola.append("\n> Cliente potencial borrado correctamente.\n");
+                else txtConsola.append("\n> ID no encontrado.\n");
+            } catch (NumberFormatException e) {
+                txtConsola.append("\n> El ID debe ser numérico.\n");
+            }
+        }
+    }
+
+    private void modificarPotencial() {
+        String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona del potencial a modificar:");
+        if (idStr == null || idStr.trim().isEmpty()) return;
+
+        try {
+            int id = Integer.parseInt(idStr);
+            ClientePotencial c = clientePotencialDAO.buscarPotencial(id);
+
+            if (c == null) {
+                txtConsola.append("\n> No se encontró ningún cliente potencial con ese ID.\n");
+                return;
+            }
+
+            String nombre = JOptionPane.showInputDialog("Nombre:", c.getNombre());
+            String email = JOptionPane.showInputDialog("Email:", c.getEmail());
+            String telefono = JOptionPane.showInputDialog("Teléfono:", c.getTelefono());
+            String empresa = JOptionPane.showInputDialog("Empresa:", c.getEmpresa());
+            String estado = JOptionPane.showInputDialog("Estado (nuevo/contactado/descartado):", c.getEstado());
+
+            if (nombre != null) c.setNombre(nombre);
+            if (email != null) c.setEmail(email);
+            if (telefono != null) c.setTelefono(telefono);
+            if (empresa != null) c.setEmpresa(empresa);
+            if (estado != null) c.setEstado(estado);
+
+            if (clientePotencialDAO.actualizar(c)) {
+                txtConsola.append("\n> Cliente potencial actualizado correctamente.\n");
+            } else {
+                txtConsola.append("\n> Error al actualizar el cliente potencial en la BD.\n");
+            }
+
+        } catch (NumberFormatException e) {
+            txtConsola.append("\n> Error: El ID debe ser un número entero.\n");
         }
     }
 
@@ -565,5 +622,25 @@ public class MenuVentana extends JFrame {
             }
         }
         txtConsola.append("----------------\n");
+    }
+
+    // --- COMPROBACIÓN DE CONEXIÓN ---
+
+    /**
+     * Comprueba si la conexión con la base de datos está activa y la muestra por consola.
+     *
+     * @author CRM-XTART Team
+     * @version 1.0
+     */
+    private void comprobarConexion() {
+        try (Connection conn = ConexionBD.getConnection()) {
+            if (conn != null && !conn.isClosed()) {
+                txtConsola.append("\n> Conexión con la BD establecida correctamente.\n");
+            } else {
+                txtConsola.append("\n> No se pudo establecer conexión con la BD.\n");
+            }
+        } catch (Exception e) {
+            txtConsola.append("\n> Error al comprobar la conexión: " + e.getMessage() + "\n");
+        }
     }
 }
