@@ -1,5 +1,12 @@
 package crm.exception;
 
+<<<<<<< HEAD
+public class EmailInvalidoException extends Exception {
+    public EmailInvalidoException(String mensaje) {
+        super(mensaje);
+    }
+}
+=======
 /**
  * Excepción lanzada cuando la dirección de correo electrónico no tiene un formato válido.
  *
@@ -17,3 +24,4 @@ public class EmailInvalidoException extends Exception {
         super(mensaje);
     }
 }
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2

@@ -22,7 +22,8 @@ public class ClienteFormalDAO {
      * @return {@code true} si la inserción fue exitosa, {@code false} en caso de error
      */
     public boolean insertar(ClienteFormal c) {
-        String sqlPersona = "INSERT INTO Persona (nombre, email, telefono) VALUES (?, ?, ?)";
+        // SOLUCIÓN: Añadido fecha_registro al INSERT
+        String sqlPersona = "INSERT INTO Persona (nombre, email, telefono, fecha_registro) VALUES (?, ?, ?, ?)";
         String sqlFormal = "INSERT INTO ClienteFormal (id_persona, codigo_cliente, nif_cif, razon_social, direccion_fiscal, condiciones_pago, descuento_habitual, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConexionBD.getConexion();
@@ -31,6 +32,7 @@ public class ClienteFormalDAO {
             ps1.setString(1, c.getNombre());
             ps1.setString(2, c.getEmail());
             ps1.setString(3, c.getTelefono());
+            ps1.setTimestamp(4, Timestamp.valueOf(java.time.LocalDateTime.now())); // Se envía la fecha actual
             ps1.executeUpdate();
 
             ResultSet rs = ps1.getGeneratedKeys();
@@ -153,6 +155,8 @@ public class ClienteFormalDAO {
         }
     }
 
+<<<<<<< HEAD
+=======
     // --- REQUISITO DE LA RÚBRICA: SOBRECARGA DE MÉTODOS ---
 
     /**
@@ -161,6 +165,7 @@ public class ClienteFormalDAO {
      * @param idPersona identificador único en la tabla Persona
      * @return objeto ClienteFormal encontrado, o {@code null} si no existe
      */
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
     public ClienteFormal buscarCliente(int idPersona) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, " +
                 "c.id_formal, c.codigo_cliente, c.nif_cif, c.razon_social, c.direccion_fiscal, c.condiciones_pago, c.descuento_habitual, c.estado " +
@@ -169,12 +174,15 @@ public class ClienteFormalDAO {
         return ejecutarBusquedaUnica(sql, idPersona, null);
     }
 
+<<<<<<< HEAD
+=======
     /**
      * Busca un cliente formal por su NIF/CIF.
      *
      * @param nifCif NIF o CIF del cliente
      * @return objeto ClienteFormal encontrado, o {@code null} si no existe
      */
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
     public ClienteFormal buscarCliente(String nifCif) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, " +
                 "c.id_formal, c.codigo_cliente, c.nif_cif, c.razon_social, c.direccion_fiscal, c.condiciones_pago, c.descuento_habitual, c.estado " +
@@ -183,6 +191,8 @@ public class ClienteFormalDAO {
         return ejecutarBusquedaUnica(sql, 0, nifCif);
     }
 
+<<<<<<< HEAD
+=======
     /**
      * Método auxiliar privado que ejecuta una consulta que devuelve un único ClienteFormal.
      *
@@ -191,6 +201,7 @@ public class ClienteFormalDAO {
      * @param nifCif    parámetro String (cuando no es null se usa en lugar de idPersona)
      * @return objeto ClienteFormal o {@code null} si no hay resultado
      */
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
     private ClienteFormal ejecutarBusquedaUnica(String sql, int idPersona, String nifCif) {
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -212,6 +223,8 @@ public class ClienteFormalDAO {
         return null;
     }
 
+<<<<<<< HEAD
+=======
     /**
      * Mapea una fila del ResultSet a un objeto ClienteFormal.
      *
@@ -219,6 +232,7 @@ public class ClienteFormalDAO {
      * @return objeto ClienteFormal con los datos de la fila
      * @throws SQLException si hay un error al leer las columnas
      */
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
     private ClienteFormal extraerCliente(ResultSet rs) throws SQLException {
         ClienteFormal c = new ClienteFormal();
         c.setIdPersona(rs.getInt("id_persona"));

@@ -5,6 +5,12 @@ import crm.model.Factura;
 import java.sql.*;
 import java.util.ArrayList;
 
+<<<<<<< HEAD
+public class FacturaDAO {
+
+    public boolean insertar(Factura f) {
+        String sql = "INSERT INTO Factura (numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+=======
 /**
  * DAO para la entidad Factura.
  * Proporciona operaciones CRUD completas contra la tabla Factura.
@@ -23,6 +29,7 @@ public class FacturaDAO {
     public boolean insertar(Factura f) {
         String sql = "INSERT INTO Factura (numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -38,13 +45,21 @@ public class FacturaDAO {
 
             ps.executeUpdate();
             return true;
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         } catch (Exception e) {
             System.out.println("Error al insertar la factura: " + e.getMessage());
             return false;
         }
     }
 
+<<<<<<< HEAD
+    public ArrayList<Factura> listarTodos() {
+        ArrayList<Factura> lista = new ArrayList<>();
+        String sql = "SELECT numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado FROM Factura";
+=======
     /**
      * Recupera todas las facturas de la base de datos.
      *
@@ -53,12 +68,20 @@ public class FacturaDAO {
     public ArrayList<Factura> listarTodos() {
         ArrayList<Factura> lista = new ArrayList<>();
         String sql = "SELECT * FROM Factura";
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
 
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
+<<<<<<< HEAD
+                Factura f = extraerFactura(rs);
+                lista.add(f);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar facturas.");
+=======
                 Factura f = new Factura();
                 f.setIdFactura(rs.getInt("id_factura"));
                 f.setNumeroFactura(rs.getString("numero_factura"));
@@ -76,10 +99,61 @@ public class FacturaDAO {
 
         } catch (Exception e) {
             System.out.println("Error al listar las facturas.");
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         }
         return lista;
     }
 
+<<<<<<< HEAD
+    // --- NUEVOS MÉTODOS: BORRAR, BUSCAR Y ACTUALIZAR ---
+
+    public boolean eliminar(String numeroFactura) {
+        String sql = "DELETE FROM Factura WHERE numero_factura = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, numeroFactura);
+            int filas = ps.executeUpdate();
+            return filas > 0;
+        } catch (Exception e) {
+            System.out.println("Error al intentar eliminar la factura: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Factura buscarFactura(String numeroFactura) {
+        String sql = "SELECT numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado FROM Factura WHERE numero_factura = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, numeroFactura);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extraerFactura(rs);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la búsqueda de la factura.");
+        }
+        return null;
+    }
+
+    public boolean actualizar(Factura f) {
+        String sql = "UPDATE Factura SET id_cliente_formal = ?, id_pedido = ?, base_imponible = ?, tipo_iva = ?, total = ?, estado = ? WHERE numero_factura = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, f.getIdClienteFormal());
+            ps.setInt(2, f.getIdPedido());
+            ps.setDouble(3, f.getBaseImponible());
+            ps.setDouble(4, f.getTipoIva());
+            ps.setDouble(5, f.getTotal());
+            ps.setString(6, f.getEstado());
+            ps.setString(7, f.getNumeroFactura()); // Clave primaria para el WHERE
+
+            ps.executeUpdate();
+            return true;
+=======
     /**
      * Actualiza los datos de una factura existente.
      *
@@ -108,12 +182,34 @@ public class FacturaDAO {
             int filas = ps.executeUpdate();
             return filas > 0;
 
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         } catch (Exception e) {
             System.out.println("Error al actualizar la factura: " + e.getMessage());
             return false;
         }
     }
 
+<<<<<<< HEAD
+    private Factura extraerFactura(ResultSet rs) throws SQLException {
+        Factura f = new Factura();
+        f.setNumeroFactura(rs.getString("numero_factura"));
+
+        Date emision = rs.getDate("fecha_emision");
+        if (emision != null) f.setFechaEmision(emision.toLocalDate());
+
+        Date vencimiento = rs.getDate("fecha_vencimiento");
+        if (vencimiento != null) f.setFechaVencimiento(vencimiento.toLocalDate());
+
+        f.setIdClienteFormal(rs.getInt("id_cliente_formal"));
+        f.setIdPedido(rs.getInt("id_pedido"));
+        f.setBaseImponible(rs.getDouble("base_imponible"));
+        f.setTipoIva(rs.getDouble("tipo_iva"));
+        f.setTotal(rs.getDouble("total"));
+        f.setEstado(rs.getString("estado"));
+        return f;
+    }
+}
+=======
     /**
      * Elimina una factura de la base de datos por su ID.
      *
@@ -136,3 +232,4 @@ public class FacturaDAO {
         }
     }
 }
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2

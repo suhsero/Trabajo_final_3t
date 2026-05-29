@@ -1,5 +1,12 @@
 package crm.exception;
 
+<<<<<<< HEAD
+public class NifInvalidoException extends Exception {
+    public NifInvalidoException(String mensaje) {
+        super(mensaje);
+    }
+}
+=======
 /**
  * Excepción lanzada cuando el NIF/CIF proporcionado no supera la validación de formato.
  *
@@ -17,3 +24,4 @@ public class NifInvalidoException extends Exception {
         super(mensaje);
     }
 }
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2

@@ -5,6 +5,12 @@ import crm.model.ClientePotencial;
 import java.sql.*;
 import java.util.ArrayList;
 
+<<<<<<< HEAD
+public class ClientePotencialDAO {
+
+    public boolean insertar(ClientePotencial c) {
+        String sqlPersona = "INSERT INTO Persona (nombre, email, telefono, fecha_registro) VALUES (?, ?, ?, ?)";
+=======
 /**
  * DAO para la entidad ClientePotencial.
  * Proporciona operaciones CRUD completas contra las tablas Persona y ClientePotencial.
@@ -23,6 +29,7 @@ public class ClientePotencialDAO {
      */
     public boolean insertar(ClientePotencial c) {
         String sqlPersona   = "INSERT INTO Persona (nombre, email, telefono) VALUES (?, ?, ?)";
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         String sqlPotencial = "INSERT INTO ClientePotencial (id_persona, empresa, fuente_captacion, estado, fecha_primer_contacto, id_comercial) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConexionBD.getConexion();
@@ -31,6 +38,10 @@ public class ClientePotencialDAO {
             ps1.setString(1, c.getNombre());
             ps1.setString(2, c.getEmail());
             ps1.setString(3, c.getTelefono());
+<<<<<<< HEAD
+            ps1.setTimestamp(4, Timestamp.valueOf(java.time.LocalDateTime.now()));
+=======
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
             ps1.executeUpdate();
 
             ResultSet rs = ps1.getGeneratedKeys();
@@ -52,11 +63,19 @@ public class ClientePotencialDAO {
             }
 
         } catch (Exception e) {
+<<<<<<< HEAD
+            System.out.println("Error al insertar el cliente potencial: " + e.getMessage());
+=======
             System.out.println("Error al insertar el cliente potencial.");
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
             return false;
         }
     }
 
+<<<<<<< HEAD
+    public ArrayList<ClientePotencial> listarTodos() {
+        ArrayList<ClientePotencial> lista = new ArrayList<>();
+=======
     /**
      * Recupera todos los clientes potenciales de la base de datos.
      *
@@ -65,6 +84,7 @@ public class ClientePotencialDAO {
     public ArrayList<ClientePotencial> listarTodos() {
         ArrayList<ClientePotencial> lista = new ArrayList<>();
 
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, " +
                 "c.id_potencial, c.empresa, c.fuente_captacion, c.estado, c.fecha_primer_contacto, c.id_comercial " +
                 "FROM ClientePotencial c INNER JOIN Persona p ON c.id_persona = p.id_persona";
@@ -75,7 +95,10 @@ public class ClientePotencialDAO {
 
             while (rs.next()) {
                 ClientePotencial c = new ClientePotencial();
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
                 c.setIdPersona(rs.getInt("id_persona"));
                 c.setNombre(rs.getString("nombre"));
                 c.setEmail(rs.getString("email"));
@@ -86,18 +109,46 @@ public class ClientePotencialDAO {
                 c.setEmpresa(rs.getString("empresa"));
                 c.setFuenteCaptacion(rs.getString("fuente_captacion"));
                 c.setEstado(rs.getString("estado"));
+<<<<<<< HEAD
+
+                Date fechaContacto = rs.getDate("fecha_primer_contacto");
+                if (fechaContacto != null) {
+                    c.setFechaPrimerContacto(fechaContacto.toLocalDate());
+                }
+
+=======
                 c.setFechaPrimerContacto(rs.getDate("fecha_primer_contacto").toLocalDate());
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
                 c.setIdComercialAsignado(rs.getInt("id_comercial"));
 
                 lista.add(c);
             }
 
         } catch (Exception e) {
+<<<<<<< HEAD
+            System.out.println("Error al listar potenciales.");
+=======
             System.out.println("Error al listar clientes potenciales.");
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
         }
         return lista;
     }
 
+<<<<<<< HEAD
+    // Borrar y updates
+
+    public boolean eliminar(int idPersona) {
+        String sql = "DELETE FROM Persona WHERE id_persona = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idPersona);
+            int filas = ps.executeUpdate();
+            return filas > 0;
+
+        } catch (Exception e) {
+            System.out.println("Error al intentar eliminar el registro.");
+=======
     /**
      * Actualiza los datos de un cliente potencial existente.
      * Actualiza tanto la tabla Persona como la tabla ClientePotencial.
@@ -134,16 +185,20 @@ public class ClientePotencialDAO {
 
         } catch (Exception e) {
             System.out.println("Error al actualizar el cliente potencial: " + e.getMessage());
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
             return false;
         }
     }
 
+<<<<<<< HEAD
+=======
     /**
      * Busca un cliente potencial por su ID de persona.
      *
      * @param idPersona identificador único en la tabla Persona
      * @return objeto ClientePotencial encontrado, o {@code null} si no existe
      */
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
     public ClientePotencial buscarPotencial(int idPersona) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, " +
                 "c.id_potencial, c.empresa, c.fuente_captacion, c.estado, c.fecha_primer_contacto, c.id_comercial " +
@@ -162,11 +217,24 @@ public class ClientePotencialDAO {
                     c.setEmail(rs.getString("email"));
                     c.setTelefono(rs.getString("telefono"));
                     c.setFechaRegistro(rs.getTimestamp("fecha_registro").toLocalDateTime());
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
                     c.setIdPotencial(rs.getInt("id_potencial"));
                     c.setEmpresa(rs.getString("empresa"));
                     c.setFuenteCaptacion(rs.getString("fuente_captacion"));
                     c.setEstado(rs.getString("estado"));
+<<<<<<< HEAD
+
+                    Date fechaContacto = rs.getDate("fecha_primer_contacto");
+                    if (fechaContacto != null) {
+                        c.setFechaPrimerContacto(fechaContacto.toLocalDate());
+                    }
+
+=======
                     c.setFechaPrimerContacto(rs.getDate("fecha_primer_contacto").toLocalDate());
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
                     c.setIdComercialAsignado(rs.getInt("id_comercial"));
                     return c;
                 }
@@ -177,6 +245,37 @@ public class ClientePotencialDAO {
         return null;
     }
 
+<<<<<<< HEAD
+    public boolean actualizar(ClientePotencial c) {
+        String sqlPersona = "UPDATE Persona SET nombre = ?, email = ?, telefono = ? WHERE id_persona = ?";
+        String sqlPotencial = "UPDATE ClientePotencial SET empresa = ?, fuente_captacion = ?, estado = ?, id_comercial = ? WHERE id_persona = ?";
+
+        try (Connection con = ConexionBD.getConexion()) {
+            try (PreparedStatement ps1 = con.prepareStatement(sqlPersona)) {
+                ps1.setString(1, c.getNombre());
+                ps1.setString(2, c.getEmail());
+                ps1.setString(3, c.getTelefono());
+                ps1.setInt(4, c.getIdPersona());
+                ps1.executeUpdate();
+            }
+
+            try (PreparedStatement ps2 = con.prepareStatement(sqlPotencial)) {
+                ps2.setString(1, c.getEmpresa());
+                ps2.setString(2, c.getFuenteCaptacion());
+                ps2.setString(3, c.getEstado());
+                ps2.setInt(4, c.getIdComercialAsignado());
+                ps2.setInt(5, c.getIdPersona());
+                ps2.executeUpdate();
+            }
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error al actualizar el cliente potencial: " + e.getMessage());
+            return false;
+        }
+    }
+}
+=======
     /**
      * Elimina un cliente potencial de la base de datos borrando su registro en Persona.
      * La FK con ON DELETE CASCADE elimina automáticamente el registro de ClientePotencial.
@@ -200,3 +299,4 @@ public class ClientePotencialDAO {
         }
     }
 }
+>>>>>>> 1ccd50291a0558ebad9df4bab284815145f5bbf2
