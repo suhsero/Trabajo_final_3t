@@ -47,7 +47,7 @@ public class MenuVentana extends JFrame {
     private FacturaDAO facturaDAO = new FacturaDAO();
 
     public MenuVentana() {
-        this.setTitle("CRM XTART - Menú Principal");
+        this.setTitle("CRM - Menú Principal");
         this.setSize(700, 550);
         this.setDefaultCloseOperation(3);
         this.setLocationRelativeTo((Component)null);
