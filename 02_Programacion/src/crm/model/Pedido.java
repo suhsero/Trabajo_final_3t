@@ -2,13 +2,6 @@ package crm.model;
 
 import java.time.LocalDateTime;
 
-/**
- * Representa un pedido realizado por un cliente formal.
- * Contiene los datos básicos del encargo antes de la facturación.
- *
- * @author Javier
- * @version 1.0
- */
 public class Pedido {
     private int idPedido;
     private LocalDateTime fechaPedido;
@@ -16,15 +9,6 @@ public class Pedido {
     private int idComercial;
     private String estado;
 
-    /**
-     * Constructor completo.
-     *
-     * @param idPedido       identificador único del pedido en BD
-     * @param fechaPedido    fecha y hora de creación del pedido
-     * @param idClienteFormal identificador del cliente formal que realiza el pedido
-     * @param idComercial    identificador del comercial que gestiona el pedido
-     * @param estado         estado actual del pedido (pendiente, en curso, servido, anulado)
-     */
     public Pedido(int idPedido, LocalDateTime fechaPedido, int idClienteFormal, int idComercial, String estado) {
         this.idPedido = idPedido;
         this.fechaPedido = fechaPedido;
@@ -33,31 +17,46 @@ public class Pedido {
         this.estado = estado;
     }
 
-    /** Constructor vacío requerido para instanciación vía DAO. */
-    public Pedido() {}
+    public Pedido() {
+    }
 
-    /** @return identificador único del pedido */
-    public int getIdPedido() { return idPedido; }
-    /** @param idPedido nuevo identificador */
-    public void setIdPedido(int idPedido) { this.idPedido = idPedido; }
+    public int getIdPedido() {
+        return this.idPedido;
+    }
 
-    /** @return fecha y hora de creación del pedido */
-    public LocalDateTime getFechaPedido() { return fechaPedido; }
-    /** @param fechaPedido nueva fecha del pedido */
-    public void setFechaPedido(LocalDateTime fechaPedido) { this.fechaPedido = fechaPedido; }
+    public void setIdPedido(int idPedido) {
+        this.idPedido = idPedido;
+    }
 
-    /** @return ID del cliente formal asociado */
-    public int getIdClienteFormal() { return idClienteFormal; }
-    /** @param idClienteFormal nuevo ID de cliente formal */
-    public void setIdClienteFormal(int idClienteFormal) { this.idClienteFormal = idClienteFormal; }
+    public LocalDateTime getFechaPedido() {
+        return this.fechaPedido;
+    }
 
-    /** @return ID del comercial que gestiona el pedido */
-    public int getIdComercial() { return idComercial; }
-    /** @param idComercial nuevo ID de comercial */
-    public void setIdComercial(int idComercial) { this.idComercial = idComercial; }
+    public void setFechaPedido(LocalDateTime fechaPedido) {
+        this.fechaPedido = fechaPedido;
+    }
 
-    /** @return estado actual del pedido */
-    public String getEstado() { return estado; }
-    /** @param estado nuevo estado */
-    public void setEstado(String estado) { this.estado = estado; }
+    public int getIdClienteFormal() {
+        return this.idClienteFormal;
+    }
+
+    public void setIdClienteFormal(int idClienteFormal) {
+        this.idClienteFormal = idClienteFormal;
+    }
+
+    public int getIdComercial() {
+        return this.idComercial;
+    }
+
+    public void setIdComercial(int idComercial) {
+        this.idComercial = idComercial;
+    }
+
+    public String getEstado() {
+        return this.estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 }
