@@ -59,6 +59,22 @@ CREATE TABLE ClientePotencial (
 );
 
 -- -------------------------------------------------------
+-- Interaccion (historico de contactos sobre ClientePotencial)
+-- -------------------------------------------------------
+CREATE TABLE Interaccion (
+    id_interaccion INT AUTO_INCREMENT PRIMARY KEY,
+    tipo ENUM('llamada','correo','reunion') NOT NULL,
+    fecha DATE NOT NULL,
+    descripcion TEXT,
+    id_potencial INT NOT NULL,
+    id_comercial INT NOT NULL,
+    FOREIGN KEY (id_potencial) REFERENCES ClientePotencial(id_potencial)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_comercial) REFERENCES Comercial(id_comercial)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- -------------------------------------------------------
 -- ClienteFormal (hereda de Persona)
 -- -------------------------------------------------------
 CREATE TABLE ClienteFormal (
@@ -71,8 +87,11 @@ CREATE TABLE ClienteFormal (
     condiciones_pago ENUM('contado','30','60','90') DEFAULT 'contado',
     descuento_habitual DECIMAL(5,2) DEFAULT 0.00,
     estado ENUM('activo','inactivo') DEFAULT 'activo',
+    id_comercial INT,
     FOREIGN KEY (id_persona) REFERENCES Persona(id_persona)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_comercial) REFERENCES Comercial(id_comercial)
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- -------------------------------------------------------
@@ -398,6 +417,24 @@ INSERT INTO ClientePotencial (id_persona, empresa, fuente_captacion, estado, fec
 (15, 'BetaCorp',     'Email',         'nuevo',         '2026-04-25', 5);
 
 -- -------------------------------------------------------
+-- 4c. Interacciones (historico de contactos con potenciales)
+-- -------------------------------------------------------
+INSERT INTO Interaccion (tipo, fecha, descripcion, id_potencial, id_comercial) VALUES
+('llamada',  '2026-02-11', 'Primer contacto telefonico, interes en Consultoria Cloud', 1, 1),
+('correo',   '2026-02-18', 'Envio de propuesta comercial por email',                  1, 1),
+('reunion',  '2026-02-25', 'Reunion presencial, pendiente de decision',               1, 1),
+('llamada',  '2026-03-06', 'Seguimiento, solicita mas informacion sobre precios',     2, 2),
+('correo',   '2026-03-10', 'Envio de catalogo de productos actualizado',              2, 2),
+('llamada',  '2026-03-13', 'Primer contacto, muestra interes en Desarrollo Web',      3, 3),
+('reunion',  '2026-03-21', 'Reunion inicial, presentacion del CRM',                  4, 4),
+('correo',   '2026-03-22', 'Resumen de la reunion y proximos pasos',                 4, 4),
+('llamada',  '2026-04-06', 'Contacto inicial via web, solicita demo',                6, 1),
+('correo',   '2026-04-11', 'Envio de presentacion corporativa',                      7, 2),
+('llamada',  '2026-04-12', 'Seguimiento de propuesta, interes moderado',             7, 2),
+('reunion',  '2026-04-16', 'Demo del sistema, muy buena acogida',                   8, 3),
+('llamada',  '2026-04-26', 'Primer contacto, solicita informacion de precios',       10, 5);
+
+-- -------------------------------------------------------
 -- 4c. Clientes Formales (15)
 -- Nota: los id_persona continuan desde el 16
 -- -------------------------------------------------------
@@ -418,22 +455,22 @@ INSERT INTO Persona (nombre, email, telefono, fecha_registro) VALUES
 ('Silvia',   'silvia.lara@email.com',     '650505050', '2025-12-15'),
 ('Adrian',   'adrian.mora@email.com',     '660606060', '2026-01-01');
 
-INSERT INTO ClienteFormal (id_persona, codigo_cliente, nif_cif, razon_social, direccion_fiscal, condiciones_pago, descuento_habitual, estado) VALUES
-(16, 'CLI001', 'A12345678', 'Jorge Blanco SL',       'Calle Mayor 1',          '30',  5.00, 'activo'),
-(17, 'CLI002', 'B23456789', 'Marta Rios SA',         'Avda. Principal 10',     '60',  3.00, 'activo'),
-(18, 'CLI003', 'C34567890', 'Alberto Vega SL',       'Plaza Central 5',        'contado', 0.00, 'activo'),
-(19, 'CLI004', 'D45678901', 'Rosa Molina SA',        'Calle Sol 20',           '30',  2.00, 'activo'),
-(20, 'CLI005', 'E56789012', 'Antonio Cruz SL',       'Avda. Mar 15',           '90',  7.00, 'activo'),
-(21, 'CLI006', 'F67890123', 'Teresa Soto SA',        'Calle Luna 8',           '30',  4.00, 'activo'),
-(22, 'CLI007', 'G78901234', 'Francisco Muro SL',     'Calle Estrella 3',       '60',  0.00, 'inactivo'),
-(23, 'CLI008', 'H89012345', 'Patricia Pena SA',      'Avda. Sol 25',           'contado', 1.50, 'activo'),
-(24, 'CLI009', 'I90123456', 'Manuel Calvo SL',       'Calle Rio 12',           '30',  6.00, 'activo'),
-(25, 'CLI010', 'J01234567', 'Eva Marquez SA',        'Plaza Mayor 7',          '90',  8.00, 'activo'),
-(26, 'CLI011', 'K12345678', 'Roberto Sanz SL',       'Calle Olivo 4',          '60',  2.50, 'activo'),
-(27, 'CLI012', 'L23456789', 'Nuria Gil SA',          'Avda. Monte 18',         '30',  3.50, 'activo'),
-(28, 'CLI013', 'M34567890', 'Victor Oraa SL',        'Calle Pino 9',           'contado', 0.00, 'inactivo'),
-(29, 'CLI014', 'N45678901', 'Silvia Lara SA',        'Calle Roble 22',         '60',  5.00, 'activo'),
-(30, 'CLI015', 'O56789012', 'Adrian Mora SL',        'Avda. Cedro 14',         '30',  4.00, 'activo');
+INSERT INTO ClienteFormal (id_persona, codigo_cliente, nif_cif, razon_social, direccion_fiscal, condiciones_pago, descuento_habitual, estado, id_comercial) VALUES
+(16, 'CLI001', 'A12345678', 'Jorge Blanco SL',       'Calle Mayor 1',          '30',  5.00, 'activo',   1),
+(17, 'CLI002', 'B23456789', 'Marta Rios SA',         'Avda. Principal 10',     '60',  3.00, 'activo',   1),
+(18, 'CLI003', 'C34567890', 'Alberto Vega SL',       'Plaza Central 5',        'contado', 0.00, 'activo', 1),
+(19, 'CLI004', 'D45678901', 'Rosa Molina SA',        'Calle Sol 20',           '30',  2.00, 'activo',   2),
+(20, 'CLI005', 'E56789012', 'Antonio Cruz SL',       'Avda. Mar 15',           '90',  7.00, 'activo',   2),
+(21, 'CLI006', 'F67890123', 'Teresa Soto SA',        'Calle Luna 8',           '30',  4.00, 'activo',   2),
+(22, 'CLI007', 'G78901234', 'Francisco Muro SL',     'Calle Estrella 3',       '60',  0.00, 'inactivo', 3),
+(23, 'CLI008', 'H89012345', 'Patricia Pena SA',      'Avda. Sol 25',           'contado', 1.50, 'activo', 3),
+(24, 'CLI009', 'I90123456', 'Manuel Calvo SL',       'Calle Rio 12',           '30',  6.00, 'activo',   3),
+(25, 'CLI010', 'J01234567', 'Eva Marquez SA',        'Plaza Mayor 7',          '90',  8.00, 'activo',   4),
+(26, 'CLI011', 'K12345678', 'Roberto Sanz SL',       'Calle Olivo 4',          '60',  2.50, 'activo',   4),
+(27, 'CLI012', 'L23456789', 'Nuria Gil SA',          'Avda. Monte 18',         '30',  3.50, 'activo',   4),
+(28, 'CLI013', 'M34567890', 'Victor Oraa SL',        'Calle Pino 9',           'contado', 0.00, 'inactivo', 5),
+(29, 'CLI014', 'N45678901', 'Silvia Lara SA',        'Calle Roble 22',         '60',  5.00, 'activo',   5),
+(30, 'CLI015', 'O56789012', 'Adrian Mora SL',        'Avda. Cedro 14',         '30',  4.00, 'activo',   5);
 
 -- -------------------------------------------------------
 -- 4d. Productos (10)
@@ -653,6 +690,54 @@ WHERE pd.estado = 'pendiente'
 GROUP BY pd.id_pedido
 ORDER BY dias_pendiente DESC;
 
+-- -------------------------------------------------------
+-- 5.6. Historial completo de compras de un cliente
+-- Sustituir p_id_formal por el id del cliente a consultar
+-- -------------------------------------------------------
+SELECT
+    p.id_pedido,
+    p.fecha_pedido,
+    p.estado                                          AS estado_pedido,
+    GROUP_CONCAT(
+        CONCAT(pr.nombre, ' x', lp.cantidad)
+        ORDER BY lp.id_linea SEPARATOR ' | '
+    )                                                 AS productos,
+    ROUND(SUM(lp.cantidad * lp.precio_unitario * (1 - lp.descuento_linea / 100)), 2) AS base_pedido,
+    f.numero_factura,
+    f.total                                           AS total_facturado,
+    f.estado                                          AS estado_factura
+FROM Pedido p
+JOIN LineaPedido lp  ON p.id_pedido       = lp.id_pedido
+JOIN Producto pr     ON lp.id_producto    = pr.id_producto
+LEFT JOIN Factura f  ON p.id_pedido       = f.id_pedido
+WHERE p.id_cliente_formal = 1          -- cambiar por el id deseado
+GROUP BY p.id_pedido, f.id_factura
+ORDER BY p.fecha_pedido DESC;
+
+-- -------------------------------------------------------
+-- 5.7. Clientes inactivos: sin pedidos en los ultimos 90 dias
+-- Cambiar el intervalo segun necesidad (30, 60, 90 dias)
+-- -------------------------------------------------------
+SELECT
+    cf.codigo_cliente,
+    cf.razon_social,
+    cf.estado,
+    pe.email,
+    pe.telefono,
+    CONCAT(pc.nombre, ' ', com.apellidos)             AS comercial_asignado,
+    MAX(p.fecha_pedido)                               AS ultimo_pedido,
+    DATEDIFF(CURDATE(), MAX(p.fecha_pedido))          AS dias_sin_compra
+FROM ClienteFormal cf
+JOIN Persona pe   ON cf.id_persona    = pe.id_persona
+LEFT JOIN Comercial com ON cf.id_comercial = com.id_comercial
+LEFT JOIN Persona pc    ON com.id_persona  = pc.id_persona
+LEFT JOIN Pedido p      ON cf.id_formal    = p.id_cliente_formal
+                       AND p.estado != 'anulado'
+GROUP BY cf.id_formal
+HAVING MAX(p.fecha_pedido) < DATE_SUB(CURDATE(), INTERVAL 90 DAY)
+    OR MAX(p.fecha_pedido) IS NULL
+ORDER BY dias_sin_compra DESC;
+
 -- ============================================================
 -- 6. SENTENCIAS UPDATE Y DELETE DE EJEMPLO
 -- ============================================================
@@ -686,6 +771,7 @@ GRANT SELECT, INSERT, UPDATE ON crm_xtart.LineaPedido TO 'comercial_crm';
 GRANT SELECT ON crm_xtart.Producto TO 'comercial_crm';
 GRANT SELECT ON crm_xtart.Factura TO 'comercial_crm';
 GRANT SELECT ON crm_xtart.Comercial TO 'comercial_crm';
+GRANT SELECT, INSERT ON crm_xtart.Interaccion TO 'comercial_crm';
 GRANT EXECUTE ON PROCEDURE crm_xtart.convertirClientePotencial TO 'comercial_crm';
 GRANT EXECUTE ON PROCEDURE crm_xtart.generarFactura TO 'comercial_crm';
 
