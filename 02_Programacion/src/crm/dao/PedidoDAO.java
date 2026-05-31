@@ -29,10 +29,13 @@ public class PedidoDAO {
     public boolean validarEstadoPedido(String estado) {
         if (estado == null) {
             return false;
-        } else {
-            String e = estado.toLowerCase().trim();
-            return e.equals("pendiente") || e.equals("en curso") || e.equals("servido") || e.equals("anulado");
         }
+        String[] estadosValidos = {"pendiente", "en curso", "servido", "anulado"};
+        String e = estado.toLowerCase().trim();
+        for (String s : estadosValidos) {
+            if (e.equals(s)) return true;
+        }
+        return false;
     }
 
     /**
