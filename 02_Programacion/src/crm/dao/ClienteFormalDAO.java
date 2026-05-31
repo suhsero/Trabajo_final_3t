@@ -10,7 +10,24 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * DAO (Data Access Object) para la entidad ClienteFormal.
+ * Encapsula todas las operaciones CRUD contra las tablas Persona y ClienteFormal
+ * de la base de datos MySQL, usando JDBC con PreparedStatement.
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class ClienteFormalDAO {
+
+    /**
+     * Inserta un nuevo cliente formal en la base de datos.
+     * Realiza dos inserciones: primero en la tabla Persona y después en ClienteFormal,
+     * usando el ID generado automáticamente por la primera inserción.
+     *
+     * @param c Objeto {@link ClienteFormal} con los datos a insertar.
+     * @return {@code true} si la inserción fue correcta; {@code false} en caso de error.
+     */
     public boolean insertar(ClienteFormal c) {
         String sqlPersona = "INSERT INTO Persona (nombre, email, telefono, fecha_registro) VALUES (?, ?, ?, ?)";
         String sqlFormal = "INSERT INTO ClienteFormal (id_persona, codigo_cliente, nif_cif, razon_social, direccion_fiscal, condiciones_pago, descuento_habitual, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -53,6 +70,12 @@ public class ClienteFormalDAO {
         }
     }
 
+    /**
+     * Recupera todos los clientes formales de la base de datos.
+     * Realiza un JOIN entre las tablas Persona y ClienteFormal.
+     *
+     * @return Lista con todos los clientes formales; lista vacía si no hay registros.
+     */
     public ArrayList<ClienteFormal> listarTodos() {
         ArrayList<ClienteFormal> lista = new ArrayList();
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, c.id_formal, c.codigo_cliente, c.nif_cif, c.razon_social, c.direccion_fiscal, c.condiciones_pago, c.descuento_habitual, c.estado FROM ClienteFormal c INNER JOIN Persona p ON c.id_persona = p.id_persona";
@@ -73,6 +96,14 @@ public class ClienteFormalDAO {
         return lista;
     }
 
+    /**
+     * Elimina un cliente formal por su ID de persona.
+     * Al existir ON DELETE CASCADE en la BD, la eliminación de Persona
+     * también borra el registro de ClienteFormal.
+     *
+     * @param idPersona ID de la persona a eliminar.
+     * @return {@code true} si se eliminó al menos un registro; {@code false} si no se encontró.
+     */
     public boolean eliminar(int idPersona) {
         String sql = "DELETE FROM Persona WHERE id_persona = ?";
 
@@ -94,16 +125,40 @@ public class ClienteFormalDAO {
         }
     }
 
+    /**
+     * Busca un cliente formal por su ID de persona.
+     * Sobrecarga del método buscarCliente para búsqueda por entero.
+     *
+     * @param idPersona ID de la persona a buscar.
+     * @return El {@link ClienteFormal} encontrado, o {@code null} si no existe.
+     */
     public ClienteFormal buscarCliente(int idPersona) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, c.id_formal, c.codigo_cliente, c.nif_cif, c.razon_social, c.direccion_fiscal, c.condiciones_pago, c.descuento_habitual, c.estado FROM ClienteFormal c INNER JOIN Persona p ON c.id_persona = p.id_persona WHERE p.id_persona = ?";
-        return this.ejecutarBusquedaUnica(sql, idPersona, (String)null);
+        return this.ejecutarBusquedaUnica(sql, idPersona, null);
     }
 
+    /**
+     * Busca un cliente formal por su NIF/CIF.
+     * Sobrecarga del método buscarCliente para búsqueda por cadena de texto.
+     *
+     * @param nifCif NIF o CIF del cliente a buscar.
+     * @return El {@link ClienteFormal} encontrado, o {@code null} si no existe.
+     */
     public ClienteFormal buscarCliente(String nifCif) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, c.id_formal, c.codigo_cliente, c.nif_cif, c.razon_social, c.direccion_fiscal, c.condiciones_pago, c.descuento_habitual, c.estado FROM ClienteFormal c INNER JOIN Persona p ON c.id_persona = p.id_persona WHERE c.nif_cif = ?";
         return this.ejecutarBusquedaUnica(sql, 0, nifCif);
     }
 
+    /**
+     * Método privado auxiliar que ejecuta una búsqueda de un único cliente formal.
+     * Centraliza la lógica de búsqueda para las dos sobrecargas de buscarCliente,
+     * evitando duplicación de código (principio DRY).
+     *
+     * @param sql       Sentencia SQL con un parámetro de búsqueda.
+     * @param idPersona ID a usar como parámetro (si nifCif es null).
+     * @param nifCif    NIF/CIF a usar como parámetro (si idPersona es 0).
+     * @return El {@link ClienteFormal} encontrado, o {@code null} si no existe.
+     */
     private ClienteFormal ejecutarBusquedaUnica(String sql, int idPersona, String nifCif) {
         try {
             try (
@@ -131,6 +186,14 @@ public class ClienteFormalDAO {
         }
     }
 
+    /**
+     * Método privado auxiliar que construye un objeto ClienteFormal a partir
+     * de la fila actual de un ResultSet.
+     *
+     * @param rs ResultSet posicionado en la fila a leer.
+     * @return Objeto {@link ClienteFormal} con los datos de la fila.
+     * @throws SQLException Si ocurre un error al leer las columnas del ResultSet.
+     */
     private ClienteFormal extraerCliente(ResultSet rs) throws SQLException {
         ClienteFormal c = new ClienteFormal();
         c.setIdPersona(rs.getInt("id_persona"));

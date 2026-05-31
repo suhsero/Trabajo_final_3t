@@ -9,7 +9,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * DAO (Data Access Object) para la entidad Factura.
+ * Encapsula todas las operaciones CRUD contra la tabla Factura
+ * de la base de datos MySQL, usando JDBC con PreparedStatement.
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class FacturaDAO {
+
+    /**
+     * Inserta una nueva factura en la base de datos.
+     *
+     * @param f Objeto {@link Factura} con los datos a insertar.
+     * @return {@code true} si la inserción fue correcta; {@code false} en caso de error.
+     */
     public boolean insertar(Factura f) {
         String sql = "INSERT INTO Factura (numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -39,6 +54,11 @@ public class FacturaDAO {
         }
     }
 
+    /**
+     * Recupera todas las facturas de la base de datos.
+     *
+     * @return Lista con todas las facturas; lista vacía si no hay registros.
+     */
     public ArrayList<Factura> listarTodos() {
         ArrayList<Factura> lista = new ArrayList();
         String sql = "SELECT numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado FROM Factura";
@@ -59,6 +79,12 @@ public class FacturaDAO {
         return lista;
     }
 
+    /**
+     * Elimina una factura por su número de factura.
+     *
+     * @param numeroFactura Número de factura a eliminar (clave única).
+     * @return {@code true} si se eliminó la factura; {@code false} si no se encontró.
+     */
     public boolean eliminar(String numeroFactura) {
         String sql = "DELETE FROM Factura WHERE numero_factura = ?";
 
@@ -80,6 +106,12 @@ public class FacturaDAO {
         }
     }
 
+    /**
+     * Busca una factura por su número de factura.
+     *
+     * @param numeroFactura Número de factura a buscar.
+     * @return La {@link Factura} encontrada, o {@code null} si no existe.
+     */
     public Factura buscarFactura(String numeroFactura) {
         String sql = "SELECT numero_factura, fecha_emision, fecha_vencimiento, id_cliente_formal, id_pedido, base_imponible, tipo_iva, total, estado FROM Factura WHERE numero_factura = ?";
 
@@ -105,6 +137,12 @@ public class FacturaDAO {
         }
     }
 
+    /**
+     * Actualiza los datos de una factura existente en la base de datos.
+     *
+     * @param f Objeto {@link Factura} con los nuevos datos (debe tener numeroFactura válido).
+     * @return {@code true} si la actualización fue correcta; {@code false} en caso de error.
+     */
     public boolean actualizar(Factura f) {
         String sql = "UPDATE Factura SET id_cliente_formal = ?, id_pedido = ?, base_imponible = ?, tipo_iva = ?, total = ?, estado = ? WHERE numero_factura = ?";
 
@@ -132,6 +170,14 @@ public class FacturaDAO {
         }
     }
 
+    /**
+     * Método privado auxiliar que construye un objeto Factura a partir
+     * de la fila actual de un ResultSet.
+     *
+     * @param rs ResultSet posicionado en la fila a leer.
+     * @return Objeto {@link Factura} con los datos de la fila.
+     * @throws SQLException Si ocurre un error al leer las columnas del ResultSet.
+     */
     private Factura extraerFactura(ResultSet rs) throws SQLException {
         Factura f = new Factura();
         f.setNumeroFactura(rs.getString("numero_factura"));

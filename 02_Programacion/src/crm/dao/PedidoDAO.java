@@ -9,7 +9,23 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+/**
+ * DAO (Data Access Object) para la entidad Pedido.
+ * Encapsula todas las operaciones CRUD contra la tabla Pedido
+ * de la base de datos MySQL, usando JDBC con PreparedStatement.
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class PedidoDAO {
+
+    /**
+     * Valida que el estado de un pedido sea uno de los valores permitidos.
+     * Los estados válidos son: pendiente, en curso, servido, anulado.
+     *
+     * @param estado Cadena de texto con el estado a validar.
+     * @return {@code true} si el estado es válido; {@code false} si es nulo o no reconocido.
+     */
     public boolean validarEstadoPedido(String estado) {
         if (estado == null) {
             return false;
@@ -19,6 +35,12 @@ public class PedidoDAO {
         }
     }
 
+    /**
+     * Inserta un nuevo pedido en la base de datos.
+     *
+     * @param p Objeto {@link Pedido} con los datos a insertar.
+     * @return {@code true} si la inserción fue correcta; {@code false} en caso de error.
+     */
     public boolean insertar(Pedido p) {
         String sql = "INSERT INTO Pedido (id_cliente_formal, id_comercial, estado, fecha_pedido) VALUES (?, ?, ?, ?)";
 
@@ -43,6 +65,11 @@ public class PedidoDAO {
         }
     }
 
+    /**
+     * Recupera todos los pedidos de la base de datos.
+     *
+     * @return Lista con todos los pedidos; lista vacía si no hay registros.
+     */
     public ArrayList<Pedido> listarTodos() {
         ArrayList<Pedido> lista = new ArrayList();
         String sql = "SELECT id_pedido, id_cliente_formal, id_comercial, estado, fecha_pedido FROM Pedido";
@@ -63,6 +90,12 @@ public class PedidoDAO {
         return lista;
     }
 
+    /**
+     * Elimina un pedido por su ID.
+     *
+     * @param idPedido ID del pedido a eliminar.
+     * @return {@code true} si se eliminó el pedido; {@code false} si no se encontró.
+     */
     public boolean eliminar(int idPedido) {
         String sql = "DELETE FROM Pedido WHERE id_pedido = ?";
 
@@ -84,6 +117,12 @@ public class PedidoDAO {
         }
     }
 
+    /**
+     * Busca un pedido por su ID.
+     *
+     * @param idPedido ID del pedido a buscar.
+     * @return El {@link Pedido} encontrado, o {@code null} si no existe.
+     */
     public Pedido buscarPedido(int idPedido) {
         String sql = "SELECT id_pedido, id_cliente_formal, id_comercial, estado, fecha_pedido FROM Pedido WHERE id_pedido = ?";
 
@@ -109,6 +148,12 @@ public class PedidoDAO {
         }
     }
 
+    /**
+     * Actualiza el estado y las referencias de un pedido existente.
+     *
+     * @param p Objeto {@link Pedido} con los nuevos datos (debe tener idPedido válido).
+     * @return {@code true} si la actualización fue correcta; {@code false} en caso de error.
+     */
     public boolean actualizar(Pedido p) {
         String sql = "UPDATE Pedido SET id_cliente_formal = ?, id_comercial = ?, estado = ? WHERE id_pedido = ?";
 
@@ -133,6 +178,14 @@ public class PedidoDAO {
         }
     }
 
+    /**
+     * Método privado auxiliar que construye un objeto Pedido a partir
+     * de la fila actual de un ResultSet.
+     *
+     * @param rs ResultSet posicionado en la fila a leer.
+     * @return Objeto {@link Pedido} con los datos de la fila.
+     * @throws SQLException Si ocurre un error al leer las columnas del ResultSet.
+     */
     private Pedido extraerPedido(ResultSet rs) throws SQLException {
         Pedido p = new Pedido();
         p.setIdPedido(rs.getInt("id_pedido"));
