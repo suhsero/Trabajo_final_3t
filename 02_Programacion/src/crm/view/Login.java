@@ -12,13 +12,28 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+/**
+ * Ventana de inicio de sesión del sistema CRM XTART.
+ * Presenta un formulario de usuario y contraseña, bloqueando el acceso
+ * tras {@link #MAX_INTENTOS_LOGIN} intentos fallidos consecutivos.
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class Login extends JFrame {
+
+    /** Número máximo de intentos de login permitidos antes de cerrar la aplicación. */
     public static final int MAX_INTENTOS_LOGIN = 3;
     private int intentos = 0;
     private JTextField txtUsuario;
     private JPasswordField txtPass;
     private JButton btnEntrar;
 
+    /**
+     * Construye y configura la ventana de login.
+     * Inicializa los componentes Swing (etiquetas, campos de texto y botón)
+     * y registra el listener que llama a {@link #comprobarLogin()}.
+     */
     public Login() {
         this.setTitle("CRM  - Acceso");
         this.setSize(320, 220);
@@ -51,6 +66,12 @@ public class Login extends JFrame {
         });
     }
 
+    /**
+     * Comprueba las credenciales introducidas por el usuario.
+     * Si son correctas, abre {@link MenuVentana} y cierra esta ventana.
+     * Si son incorrectas, incrementa el contador de intentos y muestra
+     * un aviso; al llegar a {@link #MAX_INTENTOS_LOGIN} cierra la aplicación.
+     */
     private void comprobarLogin() {
         String user = this.txtUsuario.getText();
         String pass = new String(this.txtPass.getPassword());

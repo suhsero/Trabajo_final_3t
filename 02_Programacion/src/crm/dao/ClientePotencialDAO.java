@@ -10,7 +10,24 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * DAO (Data Access Object) para la entidad ClientePotencial.
+ * Encapsula todas las operaciones CRUD contra las tablas Persona y ClientePotencial
+ * de la base de datos MySQL, usando JDBC con PreparedStatement.
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class ClientePotencialDAO {
+
+    /**
+     * Inserta un nuevo cliente potencial en la base de datos.
+     * Realiza dos inserciones: primero en Persona y después en ClientePotencial,
+     * usando el ID generado por la primera inserción.
+     *
+     * @param c Objeto {@link ClientePotencial} con los datos a insertar.
+     * @return {@code true} si la inserción fue correcta; {@code false} en caso de error.
+     */
     public boolean insertar(ClientePotencial c) {
         String sqlPersona = "INSERT INTO Persona (nombre, email, telefono, fecha_registro) VALUES (?, ?, ?, ?)";
         String sqlPotencial = "INSERT INTO ClientePotencial (id_persona, empresa, fuente_captacion, estado, fecha_primer_contacto, id_comercial) VALUES (?, ?, ?, ?, ?, ?)";
@@ -51,6 +68,12 @@ public class ClientePotencialDAO {
         }
     }
 
+    /**
+     * Recupera todos los clientes potenciales de la base de datos.
+     * Realiza un JOIN entre las tablas Persona y ClientePotencial.
+     *
+     * @return Lista con todos los clientes potenciales; lista vacía si no hay registros.
+     */
     public ArrayList<ClientePotencial> listarTodos() {
         ArrayList<ClientePotencial> lista = new ArrayList();
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, c.id_potencial, c.empresa, c.fuente_captacion, c.estado, c.fecha_primer_contacto, c.id_comercial FROM ClientePotencial c INNER JOIN Persona p ON c.id_persona = p.id_persona";
@@ -75,7 +98,6 @@ public class ClientePotencialDAO {
                 if (fechaContacto != null) {
                     c.setFechaPrimerContacto(fechaContacto.toLocalDate());
                 }
-
                 c.setIdComercialAsignado(rs.getInt("id_comercial"));
                 lista.add(c);
             }
@@ -86,6 +108,12 @@ public class ClientePotencialDAO {
         return lista;
     }
 
+    /**
+     * Elimina un cliente potencial por su ID de persona.
+     *
+     * @param idPersona ID de la persona a eliminar.
+     * @return {@code true} si se eliminó al menos un registro; {@code false} si no se encontró.
+     */
     public boolean eliminar(int idPersona) {
         String sql = "DELETE FROM Persona WHERE id_persona = ?";
 
@@ -107,6 +135,12 @@ public class ClientePotencialDAO {
         }
     }
 
+    /**
+     * Busca un cliente potencial por su ID de persona.
+     *
+     * @param idPersona ID de la persona a buscar.
+     * @return El {@link ClientePotencial} encontrado, o {@code null} si no existe.
+     */
     public ClientePotencial buscarPotencial(int idPersona) {
         String sql = "SELECT p.id_persona, p.nombre, p.email, p.telefono, p.fecha_registro, c.id_potencial, c.empresa, c.fuente_captacion, c.estado, c.fecha_primer_contacto, c.id_comercial FROM ClientePotencial c INNER JOIN Persona p ON c.id_persona = p.id_persona WHERE p.id_persona = ?";
 
@@ -133,7 +167,6 @@ public class ClientePotencialDAO {
                         if (fechaContacto != null) {
                             c.setFechaPrimerContacto(fechaContacto.toLocalDate());
                         }
-
                         c.setIdComercialAsignado(rs.getInt("id_comercial"));
                         ClientePotencial var8 = c;
                         return var8;
@@ -148,6 +181,13 @@ public class ClientePotencialDAO {
         }
     }
 
+    /**
+     * Actualiza los datos de un cliente potencial existente en la base de datos.
+     * Actualiza tanto la tabla Persona como la tabla ClientePotencial.
+     *
+     * @param c Objeto {@link ClientePotencial} con los nuevos datos (debe tener idPersona válido).
+     * @return {@code true} si la actualización fue correcta; {@code false} en caso de error.
+     */
     public boolean actualizar(ClientePotencial c) {
         String sqlPersona = "UPDATE Persona SET nombre = ?, email = ?, telefono = ? WHERE id_persona = ?";
         String sqlPotencial = "UPDATE ClientePotencial SET empresa = ?, fuente_captacion = ?, estado = ?, id_comercial = ? WHERE id_persona = ?";

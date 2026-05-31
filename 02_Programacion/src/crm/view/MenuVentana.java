@@ -36,6 +36,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+/**
+ * Ventana principal de navegación del sistema CRM XTART.
+ * Presenta un menú numerado con acceso a los módulos de Comerciales,
+ * Clientes Potenciales, Clientes Formales, Pedidos, Facturas y conexión BD.
+ * Incluye funcionalidades de exportación a fichero TXT (E/S ficheros)
+ * y serialización/deserialización de colecciones (ObjectOutputStream/ObjectInputStream).
+ *
+ * @author Javier Stampa García, Joel Guadalix y Francisco José Álvarez
+ * @version 1.0
+ */
 public class MenuVentana extends JFrame {
     private JTextArea txtConsola;
     private JTextField txtOpcion;
@@ -46,6 +56,11 @@ public class MenuVentana extends JFrame {
     private PedidoDAO pedidoDAO = new PedidoDAO();
     private FacturaDAO facturaDAO = new FacturaDAO();
 
+    /**
+     * Construye y configura la ventana del menú principal.
+     * Inicializa el área de texto de consola, el campo de opción y el botón
+     * de envío, y muestra el menú inicial.
+     */
     public MenuVentana() {
         this.setTitle("CRM - Menú Principal");
         this.setSize(700, 550);
@@ -78,6 +93,7 @@ public class MenuVentana extends JFrame {
         });
     }
 
+    /** Muestra el menú principal con las opciones disponibles en el área de consola. */
     private void imprimirMenu() {
         this.txtConsola.setText("--- MENU PRINCIPAL CRM XTART ---\n");
         this.txtConsola.append("1. Gestión de Comerciales\n");
@@ -91,6 +107,11 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("Introduce el número de la opción y pulsa Enviar.\n");
     }
 
+    /**
+     * Lee la opción introducida por el usuario y delega en el método
+     * correspondiente a cada módulo. Muestra un error si el valor no es numérico
+     * o está fuera del rango 1-7.
+     */
     private void procesarOpcion() {
         String texto = this.txtOpcion.getText();
         this.txtOpcion.setText("");
@@ -129,6 +150,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Comprueba la conexión JDBC con la base de datos e informa del resultado en la consola. */
     private void comprobarConexion() {
         this.txtConsola.append("\n> Comprobando conexión con la base de datos MySQL...\n");
 
@@ -145,6 +167,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Muestra el submenú de Comerciales y delega en la opción seleccionada. */
     private void gestionarComerciales() {
         String input = JOptionPane.showInputDialog(this, "Módulo Comerciales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Exportar a TXT\n5. Modificar (UPDATE)\nElige una opción:");
         if (input != null && !input.trim().isEmpty()) {
@@ -170,6 +193,11 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Solicita los datos de un nuevo comercial mediante diálogos de entrada,
+     * valida el formato del email y lo persiste en la base de datos a través de
+     * {@link crm.dao.ComercialDAO#insertar(crm.model.Comercial)}.
+     */
     private void altaComercial() {
         try {
             String nombre = JOptionPane.showInputDialog("Nombre del comercial:\n(Texto normal)");
@@ -203,6 +231,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Recupera todos los comerciales de la BD y los muestra en la consola. */
     private void listarComerciales() {
         ArrayList<Comercial> lista = this.comercialDAO.listarTodos();
         this.txtConsola.append("\n--- COMERCIALES ---\n");
@@ -219,6 +248,7 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("-------------------\n");
     }
 
+    /** Solicita un ID de Persona y elimina el comercial correspondiente de la BD. */
     private void borrarComercial() {
         String input = JOptionPane.showInputDialog("ID de Persona a borrar:");
         if (input != null) {
@@ -236,6 +266,11 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Exporta el listado completo de comerciales a un fichero de texto plano
+     * llamado {@code comerciales.txt} usando {@link java.io.FileWriter} y
+     * {@link java.io.PrintWriter} (E/S de ficheros).
+     */
     private void exportarComercialesTXT() {
         ArrayList<Comercial> lista = this.comercialDAO.listarTodos();
         if (lista.isEmpty()) {
@@ -257,6 +292,11 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Busca un comercial por ID, solicita los nuevos datos mediante diálogos
+     * y los actualiza en la BD mediante
+     * {@link crm.dao.ComercialDAO#actualizar(crm.model.Comercial)}.
+     */
     private void modificarComercial() {
         String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona del comercial a modificar:");
         if (idStr != null && !idStr.trim().isEmpty()) {
@@ -305,6 +345,7 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /** Muestra el submenú de Clientes Formales y delega en la opción seleccionada. */
     private void gestionarClientesFormales() {
         String input = JOptionPane.showInputDialog(this, "Módulo Clientes Formales:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Buscar Cliente\nElige una opción:");
         if (input != null && !input.trim().isEmpty()) {
@@ -328,6 +369,11 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Solicita los datos de un nuevo cliente formal, valida el NIF/CIF (9 chars)
+     * y lo persiste en la BD mediante
+     * {@link crm.dao.ClienteFormalDAO#insertar(crm.model.ClienteFormal)}.
+     */
     private void altaClienteFormal() {
         try {
             String nombre = JOptionPane.showInputDialog("Nombre del contacto principal:");
@@ -365,6 +411,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Recupera todos los clientes formales de la BD y los muestra en la consola. */
     private void listarClientesFormales() {
         ArrayList<ClienteFormal> lista = this.clienteFormalDAO.listarTodos();
         this.txtConsola.append("\n--- CLIENTES FORMALES ---\n");
@@ -381,6 +428,7 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("-------------------------\n");
     }
 
+    /** Solicita un ID de Persona y elimina el cliente formal correspondiente de la BD. */
     private void borrarClienteFormal() {
         String input = JOptionPane.showInputDialog("ID de Persona a borrar:");
         if (input != null) {
@@ -398,6 +446,10 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Permite buscar un cliente formal por ID de Persona o por NIF/CIF
+     * y muestra el resultado en la consola.
+     */
     private void buscarClienteFormal() {
         String modoStr = JOptionPane.showInputDialog("Buscar por:\n1. ID de Persona\n2. NIF/CIF");
         if (modoStr != null && !modoStr.trim().isEmpty()) {
@@ -435,6 +487,7 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /** Muestra el submenú de Clientes Potenciales y delega en la opción seleccionada. */
     private void gestionarPotenciales() {
         String input = JOptionPane.showInputDialog(this, "Módulo Potenciales:\n1. Dar de alta\n2. Listar\n3. Borrar\n4. Modificar (UPDATE)\n5. Guardar copia (Serializar)\n6. Cargar copia (Deserializar)\nElige opción:");
         if (input != null && !input.trim().isEmpty()) {
@@ -462,6 +515,10 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Solicita los datos de un nuevo cliente potencial y lo persiste en la BD
+     * mediante {@link crm.dao.ClientePotencialDAO#insertar(crm.model.ClientePotencial)}.
+     */
     private void altaPotencial() {
         try {
             String nombre = JOptionPane.showInputDialog("Nombre del contacto:");
@@ -490,6 +547,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Recupera todos los clientes potenciales de la BD y los muestra en la consola. */
     private void listarPotenciales() {
         ArrayList<ClientePotencial> lista = this.clientePotencialDAO.listarTodos();
         this.txtConsola.append("\n--- CLIENTES POTENCIALES ---\n");
@@ -506,6 +564,7 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("----------------------------\n");
     }
 
+    /** Solicita un ID de Persona y elimina el cliente potencial correspondiente de la BD. */
     private void borrarPotencial() {
         String input = JOptionPane.showInputDialog("ID de Persona a borrar:");
         if (input != null) {
@@ -523,6 +582,10 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Busca un cliente potencial por ID, solicita los nuevos datos mediante diálogos
+     * y los actualiza en la BD.
+     */
     private void modificarPotencial() {
         String idStr = JOptionPane.showInputDialog("Introduce el ID de Persona del cliente potencial a modificar:");
         if (idStr != null && !idStr.trim().isEmpty()) {
@@ -581,6 +644,11 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Serializa la lista completa de clientes potenciales en el fichero
+     * {@code potenciales_backup.dat} usando {@link java.io.ObjectOutputStream}
+     * (serialización de objetos Java).
+     */
     private void serializarPotenciales() {
         ArrayList<ClientePotencial> lista = this.clientePotencialDAO.listarTodos();
 
@@ -593,6 +661,11 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Deserializa el fichero {@code potenciales_backup.dat} y muestra
+     * los objetos {@link crm.model.ClientePotencial} recuperados en la consola,
+     * usando {@link java.io.ObjectInputStream}.
+     */
     private void deserializarPotenciales() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("potenciales_backup.dat"))) {
             ArrayList<ClientePotencial> recuperados = (ArrayList)ois.readObject();
@@ -609,6 +682,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Muestra el submenú de Pedidos y delega en la opción seleccionada. */
     private void gestionarPedidos() {
         String input = JOptionPane.showInputDialog(this, "Módulo Pedidos:\n1. Dar de alta\n2. Listar todos\n3. Borrar\n4. Modificar (UPDATE)\nElige una opción:");
         if (input != null && !input.trim().isEmpty()) {
@@ -632,6 +706,10 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Solicita los datos de un nuevo pedido, valida el estado y lo persiste
+     * en la BD mediante {@link crm.dao.PedidoDAO#insertar(crm.model.Pedido)}.
+     */
     private void altaPedido() {
         try {
             String idCliente = JOptionPane.showInputDialog("ID del Cliente Formal:\n(CRÍTICO: DEBE EXISTIR previamente un Cliente Formal con este ID)");
@@ -658,6 +736,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Recupera todos los pedidos de la BD y los muestra en la consola. */
     private void listarPedidos() {
         ArrayList<Pedido> lista = this.pedidoDAO.listarTodos();
         this.txtConsola.append("\n--- PEDIDOS ---\n");
@@ -674,6 +753,7 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("---------------\n");
     }
 
+    /** Solicita un ID de pedido y lo elimina de la BD. */
     private void borrarPedido() {
         String input = JOptionPane.showInputDialog("ID de Pedido a borrar:");
         if (input != null) {
@@ -691,6 +771,10 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Busca un pedido por ID, solicita los nuevos datos (cliente, comercial, estado)
+     * y los actualiza en la BD.
+     */
     private void modificarPedido() {
         String idStr = JOptionPane.showInputDialog("Introduce el ID del pedido a modificar:");
         if (idStr != null && !idStr.trim().isEmpty()) {
@@ -734,6 +818,7 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /** Muestra el submenú de Facturas y delega en la opción seleccionada. */
     private void gestionarFacturas() {
         String input = JOptionPane.showInputDialog(this, "Módulo Facturas:\n1. Dar de alta\n2. Listar todas\n3. Borrar\n4. Modificar (UPDATE)\nElige una opción:");
         if (input != null && !input.trim().isEmpty()) {
@@ -757,6 +842,11 @@ public class MenuVentana extends JFrame {
         }
     }
 
+    /**
+     * Solicita los datos de una nueva factura, calcula el total con IVA del 21%
+     * y la persiste en la BD mediante
+     * {@link crm.dao.FacturaDAO#insertar(crm.model.Factura)}.
+     */
     private void altaFactura() {
         try {
             String numero = JOptionPane.showInputDialog("Número de factura:\n(OBLIGATORIO: Debe ser ÚNICO, ej: FAC-001)");
@@ -787,6 +877,7 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /** Recupera todas las facturas de la BD y las muestra en la consola. */
     private void listarFacturas() {
         ArrayList<Factura> lista = this.facturaDAO.listarTodos();
         this.txtConsola.append("\n--- FACTURAS ---\n");
@@ -803,6 +894,7 @@ public class MenuVentana extends JFrame {
         this.txtConsola.append("----------------\n");
     }
 
+    /** Solicita el número de factura y la elimina de la BD. */
     private void borrarFactura() {
         String input = JOptionPane.showInputDialog("Número de Factura a borrar:");
         if (input != null && !input.trim().isEmpty()) {
@@ -815,6 +907,10 @@ public class MenuVentana extends JFrame {
 
     }
 
+    /**
+     * Busca una factura por su número, solicita los nuevos datos y los actualiza
+     * en la BD, recalculando el total si cambia la base imponible.
+     */
     private void modificarFactura() {
         String numeroFactura = JOptionPane.showInputDialog("Introduce el Número de Factura a modificar:");
         if (numeroFactura != null && !numeroFactura.trim().isEmpty()) {
