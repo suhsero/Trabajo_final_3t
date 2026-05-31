@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1ee24c4-ed0d-4496-87b0-abc63973c6a7" name="Changes" comment="Arreglo">
+    <list default="true" id="d1ee24c4-ed0d-4496-87b0-abc63973c6a7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/02_Programacion/src/crm/view/MenuVentana.java" beforeDir="false" afterPath="$PROJECT_DIR$/02_Programacion/src/crm/view/MenuVentana.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/02_Programacion/src/crm/dao/ClienteFormalDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/02_Programacion/src/crm/dao/ClienteFormalDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Proyecto 3er trimestre.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Proyecto 3er trimestre.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,25 +29,25 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "JoelGDAM"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;JoelGDAM&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/suhsero/Trabajo_final_3t.git",
-    "accountId": "4bba27a2-e373-4b7a-99b7-fa9c5af738e4"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/suhsero/Trabajo_final_3t.git&quot;,
+    &quot;accountId&quot;: &quot;4bba27a2-e373-4b7a-99b7-fa9c5af738e4&quot;
   }
-}]]></component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="3EFcDEvhvak4Fcig0l8ISCePt7L" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -63,9 +64,10 @@
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "Develop",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
@@ -119,6 +121,7 @@
       <option name="presentableId" value="Default" />
       <updated>1779777642276</updated>
       <workItem from="1779777643590" duration="17216000" />
+      <workItem from="1780244335611" duration="483000" />
     </task>
     <task id="LOCAL-00001" summary="Cambios ventana, y update clienteformal">
       <option name="closed" value="true" />

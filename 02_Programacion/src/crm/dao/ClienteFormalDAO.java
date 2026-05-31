@@ -126,6 +126,45 @@ public class ClienteFormalDAO {
     }
 
     /**
+     * Actualiza los datos de un cliente formal existente en la base de datos.
+     * Modifica tanto la tabla Persona como la tabla ClienteFormal.
+     *
+     * @param c Objeto {@link ClienteFormal} con los datos actualizados.
+     * @return {@code true} si la actualización fue correcta; {@code false} en caso de error.
+     */
+    public boolean actualizar(ClienteFormal c) {
+        String sqlPersona = "UPDATE Persona SET nombre = ?, email = ?, telefono = ? WHERE id_persona = ?";
+        String sqlFormal = "UPDATE ClienteFormal SET codigo_cliente = ?, nif_cif = ?, razon_social = ?, direccion_fiscal = ?, condiciones_pago = ?, descuento_habitual = ?, estado = ? WHERE id_persona = ?";
+
+        try (
+                Connection con = ConexionBD.getConexion();
+                PreparedStatement ps1 = con.prepareStatement(sqlPersona);
+                PreparedStatement ps2 = con.prepareStatement(sqlFormal)
+        ) {
+            ps1.setString(1, c.getNombre());
+            ps1.setString(2, c.getEmail());
+            ps1.setString(3, c.getTelefono());
+            ps1.setInt(4, c.getIdPersona());
+            ps1.executeUpdate();
+
+            ps2.setString(1, c.getCodigoCliente());
+            ps2.setString(2, c.getNifCif());
+            ps2.setString(3, c.getRazonSocial());
+            ps2.setString(4, c.getDireccionFiscal());
+            ps2.setString(5, c.getCondicionesPago());
+            ps2.setDouble(6, c.getDescuentoHabitual());
+            ps2.setString(7, c.getEstado());
+            ps2.setInt(8, c.getIdPersona());
+            ps2.executeUpdate();
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error al actualizar el cliente formal: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Busca un cliente formal por su ID de persona.
      * Sobrecarga del método buscarCliente para búsqueda por entero.
      *
